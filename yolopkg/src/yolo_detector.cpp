@@ -236,8 +236,8 @@ private:
         }
 
         // 新输出结构解析
-        const int num_detections = shape[2];  // 8400
-        const int features_per_box = shape[1];// 5
+        const int num_detections = shape[1];  
+        const int features_per_box = shape[2];
         const int num_classes = 1;            // 根据实际情况调整
 
         //ROS_INFO("Processing %d detections, %d features per box", 
@@ -252,11 +252,11 @@ private:
 
         for (int i = 0; i < num_detections; ++i) {
             // 内存布局为 [1][5][8400]，按通道优先访问
-            float cx = data[CX_IDX * num_detections + i];
-            float cy = data[CY_IDX * num_detections + i];
-            float w  = data[W_IDX * num_detections + i];
-            float h  = data[H_IDX * num_detections + i];
-            float confidence = data[CONF_IDX * num_detections + i];
+            float cx = data[CX_IDX + features_per_box * i];
+            float cy = data[CY_IDX + features_per_box * i];
+            float w  = data[W_IDX + features_per_box * i];
+            float h  = data[H_IDX + features_per_box * i];
+            float confidence = data[CONF_IDX + features_per_box * i];
 
             // 应用Sigmoid（根据模型输出是否需要）
             // confidence = 1.0f / (1.0f + std::exp(-confidence));
