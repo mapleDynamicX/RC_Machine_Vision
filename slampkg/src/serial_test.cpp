@@ -11,6 +11,10 @@
 #include <geometry_msgs/PoseWithCovariance.h> 
 #include <geometry_msgs/TwistWithCovariance.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <tf2_msgs/TFMessage.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2/LinearMath/Quaternion.h>
 //M_PI;
 
 
@@ -20,7 +24,7 @@ namespace mcu0_serial
     {
         serial_port_ = port;
         ros::NodeHandle private_nh("~");
-        private_nh.param("baud", serial_baud_, 115200);
+        private_nh.param("baud", serial_baud_, 9600);
         // 持续尝试打开串口直到成功
         while (!serial_.isOpen())
         {
@@ -97,20 +101,33 @@ namespace mcu0_serial
             从串口读取1字节数据
             读取失败则跳过后续处理继续循环
             */
-            if (serial_.read(&byte, 1) != 1) continue;
+            ros::Rate rate(300);
+
+            if (serial_.read(&byte, 1) != 1) 
+            {
+                
+                continue;
+            }
+
             if (byte == FRAME_HEAD_0) {
+                //std::cout<<0<<std::endl;
                 // Check FRAME_HEAD_1
                 if (serial_.read(&byte, 1) != 1 || byte != FRAME_HEAD_1) continue;
-
+                //std::cout<<1<<std::endl;
                 // Read frame ID
-                if (serial_.read(&framein_.frame_id, 1) != 1) continue;
-                *received_frame_id = framein_.frame_id;
-
+                // if (serial_.read(&framein_.frame_id, 1) != 1) continue;
+                // *received_frame_id = framein_.frame_id;
+                // std::cout<<2<<std::endl;
                 // Read data length
                 uint8_t data_length;
-                if (serial_.read(&data_length, 1) != 1) continue;
+                if (serial_.read(&data_length, 1) != 1) 
+                {
+                    //std::cout<<(int)data_length<<std::endl;
+                    continue;
+                }
+                
                 size_t expected_data_length = data_length;
-
+                //std::cout<<expected_data_length<<std::endl;
                 // Validate data length检查数据长度是否超出缓冲区容量
                 if (expected_data_length > sizeof(framein_.data.buff_msg)) {
                     ROS_WARN("Data too long: %d", expected_data_length);
@@ -118,12 +135,13 @@ namespace mcu0_serial
                 }
 
                 // Read data payload读取数据域内容到缓冲区
+                //serial_.read(framein_.data.buff_msg, expected_data_length);
                 if (serial_.read(framein_.data.buff_msg, expected_data_length) != expected_data_length) continue;
 
                 // Skip CRC and check frame end
                 uint8_t end_bytes[2];
                 //if (serial_.read(framein_.check_code.crc_buff, 2) != 2) continue;
-                if (serial_.read(framein_.check_code.crc_buff, 1) != 1) continue;
+                //if (serial_.read(framein_.check_code.crc_buff, 1) != 1) continue;
                 if (serial_.read(end_bytes, 2) != 2 || end_bytes[0] != FRAME_END_0 || end_bytes[1] != FRAME_END_1) continue;
 
                 // Extract float data
@@ -131,10 +149,12 @@ namespace mcu0_serial
                 for (size_t i = 0; i < *received_length; ++i) {
                     msgs[i] = framein_.data.msg_get[i];
                 }
-
+                std::cout<<3<<std::endl;
+                rate.sleep(); // 休眠至满足100Hz频率
                 return true;
             }
         }
+        
         return false;
     }
     uint16_t CRC16_Table(uint8_t *p, uint8_t counter)
@@ -243,6 +263,7 @@ void bboxCallback(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
 }
 
 ros::Publisher Odom_pub;
+
 /*
 float initial_x = 0.0f;
 float initial_y = 0.0f;
@@ -256,8 +277,8 @@ void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
     
     // 1. 设置消息头
     odom_msg.header.stamp = msg->header.stamp;
-    odom_msg.header.frame_id = msg->header.frame_id;         // 世界坐标系
-
+    odom_msg.header.frame_id = "odom";         // 世界坐标系
+    odom_msg.child_frame_id = msg->header.frame_id;
 
     // 2. 设置位姿信息 (position + orientation)
     odom_msg.pose.pose.position.x = initial_x;      // X坐标（米）
@@ -277,8 +298,8 @@ void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
     
     
     // 3. 设置协方差矩阵 (6x6, 行主序)
-    double position_variance = 0.01;           // 位置方差
-    double orientation_variance = 0.05;        // 方向方差
+    double position_variance = 0.02;           // 位置方差
+    double orientation_variance = 0.01;        // 方向方差
     boost::array<double, 36> cov = {{
         position_variance, 0, 0, 0, 0, 0,
         0, position_variance, 0, 0, 0, 0,
@@ -289,17 +310,76 @@ void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
     }};
     odom_msg.pose.covariance = cov;
 
-
+    static tf2_ros::TransformBroadcaster tf_broadcaster;
+    geometry_msgs::TransformStamped transform;
+    transform.header.stamp = msg->header.stamp;  
+    transform.header.frame_id = "odom";         // 父坐标系
+    transform.child_frame_id = msg->header.frame_id;     // 子坐标系
+    transform.transform.translation.x = initial_x;
+    transform.transform.translation.y = initial_y;
+    transform.transform.translation.z = 0.0;
+    transform.transform.rotation.x = q.x();
+    transform.transform.rotation.y = q.y();
+    transform.transform.rotation.z = q.z();
+    transform.transform.rotation.w = q.w();
+    
     
     // 5. 发布消息
     Odom_pub.publish(odom_msg);
+    tf_broadcaster.sendTransform(transform);
+    initial_x += 0.01;
+    std::cout<<"ok"<<std::endl;
+
 }
 
+struct TransformData {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    double roll = 0.0;
+    double pitch = 0.0;
+    double yaw = 0.0;
+    ros::Time stamp;
+} current_transform;
+
+void tfCallback(const tf2_msgs::TFMessage::ConstPtr& msg)
+{
+
+    for (const auto& transform : msg->transforms) {
+        // 获取源坐标系和目标坐标系
+        std::string source_frame = transform.header.frame_id;
+        std::string target_frame = transform.child_frame_id;
+        
+        // 获取平移数据
+        float x = transform.transform.translation.x;
+        float y = transform.transform.translation.y;
+        float z = transform.transform.translation.z;
+        
+        // 获取旋转数据（四元数）
+        float qx = transform.transform.rotation.x;
+        float qy = transform.transform.rotation.y;
+        float qz = transform.transform.rotation.z;
+        float qw = transform.transform.rotation.w;
+        
+        //转化欧拉角
+        tf2::Quaternion tf_quat(qx, qy, qz, qw);
+        tf2::Matrix3x3 matrix(tf_quat);
+        double roll = 0.0;
+        double pitch = 0.0;
+        double yaw = 0.0;
+        matrix.getRPY(roll, pitch, yaw);
+        
+        // 打印示例
+        ROS_INFO_STREAM("Processed transform: " << source_frame << " -> " << target_frame);
+        ROS_INFO("Position: (%.3f, %.3f, %.3f)", x, y, z);
+    }
+
+}
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "serial_node");
     ros::NodeHandle nh;
-
+    
     nh.param<int>("image_width", image_width, 640);
     nh.param<int>("image_height", image_height, 480);
 
@@ -315,13 +395,14 @@ int main(int argc, char **argv)
 
     //ros::Subscriber pose_sub = nh.subscribe("/pose_stamped", 20, poseCallback);
     //ros::Subscriber bbox_sub = nh.subscribe("/yolo/detections", 20, bboxCallback);
-    ros::Subscriber sub = nh.subscribe("/camera/camera_info", 10, cameraInfoCallback);
+    //ros::Subscriber sub = nh.subscribe<tf2_msgs::TFMessage>("/tf", 100, tfCallback);    
+    ros::Subscriber sub = nh.subscribe("/camera/camera_info", 1, cameraInfoCallback);
     Odom_pub = nh.advertise<nav_msgs::Odometry>("/camera/odom", 10);
     ros::Publisher restart_pub = nh.advertise<std_msgs::Bool>("/restart_slam", 1);
     ros::Publisher status_pub = nh.advertise<std_msgs::Bool>("/send_status", 10);
     
 
-    ros::Rate loop_rate(50);
+    // ros::Rate loop_rate(10);
     while (ros::ok()) {
         //ros::spinOnce();
 
@@ -349,11 +430,12 @@ int main(int argc, char **argv)
             }
         }
 
-        loop_rate.sleep();
-        ros::spinOnce();
+    //loop_rate.sleep();
+       ros::spinOnce();
     }
 
-    delete serialComm;
-    
+    //elete serialComm;
+    ros::spin();
+
     return 0;
 }

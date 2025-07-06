@@ -14,8 +14,8 @@ namespace mcu0_serial
 #define FRAME_HEAD_1 0xAA  // 帧头字节2
 #define FRAME_END_0 0x0D // 帧尾字节1
 #define FRAME_END_1 0x0A // 帧尾字节2
-#define MAX_DATA_LENGTH 36 // 最大数据长度(浮点数个数)
-//#define MAX_DATA_LENGTH 3 // 最大数据长度(浮点数个数)
+//#define MAX_DATA_LENGTH 36 // 最大数据长度(浮点数个数)
+#define MAX_DATA_LENGTH 3 // 最大数据长度(浮点数个数)
 
 uint16_t CRC16_Table(uint8_t *p, uint8_t counter);
 
@@ -62,7 +62,7 @@ private:
     //serial
     serial::Serial serial_; 
     
-    int serial_baud_ = 115200; // 波特率(默认115200)
+    int serial_baud_ = 9600; // 波特率(默认115200)
     int serial_timeout_ = 100; // 超时时间(ms, 默认100ms)
     double dt = 0, speed_dt = 0; // 当前时间差 ，速度计算时间差
     double last_update_time = 0, last_speed_update_time = 0;// 上一次更新时间， // 上一次速度更新时间
