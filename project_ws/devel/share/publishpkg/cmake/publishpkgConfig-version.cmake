@@ -1,0 +1,1 @@
+/home/maple/study/project_ws/devel/.private/publishpkg/share/publishpkg/cmake/publishpkgConfig-version.cmake

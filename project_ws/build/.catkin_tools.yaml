@@ -1,0 +1,6 @@
+devel_space: /home/maple/study/project_ws/devel
+install: false
+install_space: /home/maple/study/project_ws/install
+profile: default
+source_space: /home/maple/study/project_ws/src
+workspace: /home/maple/study/project_ws

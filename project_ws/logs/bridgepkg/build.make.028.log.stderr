@@ -1,0 +1,8 @@
+In file included from [01m[K/home/maple/study/project_ws/src/bridgepkg/src/bridge_node.cpp:1[m[K:
+[01m[K/home/maple/study/project_ws/src/bridgepkg/src/bridge.cpp:[m[K In member function ‘[01m[Kvoid bridge::imageCallback(const ImageConstPtr&, const ImageConstPtr&)[m[K’:
+[01m[K/home/maple/study/project_ws/src/bridgepkg/src/bridge.cpp:107:37:[m[K [01;31m[Kerror: [m[K‘[01m[KremoveInvalidPointsManual[m[K’ was not declared in this scope
+  107 |         std::cout<<"nan number:" << [01;31m[KremoveInvalidPointsManual[m[K(cloud) << std::endl;
+      |                                     [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+make[2]: *** [CMakeFiles/bridge_node.dir/build.make:63：CMakeFiles/bridge_node.dir/src/bridge_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1622：CMakeFiles/bridge_node.dir/all] 错误 2
+make: *** [Makefile:141：all] 错误 2

@@ -1,0 +1,1 @@
+/home/maple/study/project_ws/devel/.private/registrationpkg/share/registrationpkg/cmake/registrationpkgConfig.cmake
