@@ -1,0 +1,6 @@
+Symlinking /home/robocon/RC/rc3_ws/devel/lib/yolopkg/sub_bbox_node
+Symlinking /home/robocon/RC/rc3_ws/devel/lib/yolopkg/yolo_detector_node
+Symlinking /home/robocon/RC/rc3_ws/devel/lib/yolopkg/realsense_publisher.py
+Symlinking /home/robocon/RC/rc3_ws/devel/lib/pkgconfig/yolopkg.pc
+Symlinking /home/robocon/RC/rc3_ws/devel/share/yolopkg/cmake/yolopkgConfig-version.cmake
+Symlinking /home/robocon/RC/rc3_ws/devel/share/yolopkg/cmake/yolopkgConfig.cmake

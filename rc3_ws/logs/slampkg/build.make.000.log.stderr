@@ -1,0 +1,65 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/ros.h:40[m[K,
+                 from [01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:1[m[K:
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:[m[K In member function ‘[01m[Ksize_t mcu0_serial::serial_mcu::serial_send(uint8_t, float*, uint8_t)[m[K’:
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:87:18:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%d[m[K’ expects argument of type ‘[01m[Kint[m[K’, but argument 8 has type ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K-Wformat=[m[K]
+   87 |         ROS_INFO([01;35m[K"write %d"[m[K, [32m[Kwrite_num[m[K);
+      |                  [01;35m[K^~~~~~~~~~[m[K  [32m[K~~~~~~~~~[m[K
+      |                              [32m[K|[m[K
+      |                              [32m[Ksize_t {aka long unsigned int}[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:351:165:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER[m[K’
+  351 |     ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, [01;36m[K__VA_ARGS__[m[K)
+      |                                                                                                                                                                     [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:390:7:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION[m[K’
+  390 |       [01;36m[KROSCONSOLE_PRINT_AT_LOCATION[m[K(__VA_ARGS__); \
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:575:35:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG_COND[m[K’
+  575 | #define ROS_LOG(level, name, ...) [01;36m[KROS_LOG_COND[m[K(true, level, name, __VA_ARGS__)
+      |                                   [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/rosconsole/macros_generated.h:110:23:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG[m[K’
+  110 | #define ROS_INFO(...) [01;36m[KROS_LOG[m[K(::ros::console::levels::Info, ROSCONSOLE_DEFAULT_NAME, __VA_ARGS__)
+      |                       [01;36m[K^~~~~~~[m[K
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:87:9:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_INFO[m[K’
+   87 |         [01;36m[KROS_INFO[m[K("write %d", write_num);
+      |         [01;36m[K^~~~~~~~[m[K
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:87:26:[m[K [01;36m[Knote: [m[Kformat string is defined here
+   87 |         ROS_INFO("write [01;36m[K%d[m[K", write_num);
+      |                         [01;36m[K~^[m[K
+      |                          [01;36m[K|[m[K
+      |                          [01;36m[Kint[m[K
+      |                         [32m[K%ld[m[K
+In file included from [01m[K/opt/ros/noetic/include/ros/ros.h:40[m[K,
+                 from [01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:1[m[K:
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:[m[K In member function ‘[01m[Kbool mcu0_serial::serial_mcu::serial_read(uint8_t*, float*, uint8_t*)[m[K’:
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:133:30:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%d[m[K’ expects argument of type ‘[01m[Kint[m[K’, but argument 8 has type ‘[01m[Ksize_t[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K-Wformat=[m[K]
+  133 |                     ROS_WARN([01;35m[K"Data too long: %d"[m[K, [32m[Kexpected_data_length[m[K);
+      |                              [01;35m[K^~~~~~~~~~~~~~~~~~~[m[K  [32m[K~~~~~~~~~~~~~~~~~~~~[m[K
+      |                                                   [32m[K|[m[K
+      |                                                   [32m[Ksize_t {aka long unsigned int}[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:351:165:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER[m[K’
+  351 |     ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, [01;36m[K__VA_ARGS__[m[K)
+      |                                                                                                                                                                     [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:390:7:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION[m[K’
+  390 |       [01;36m[KROSCONSOLE_PRINT_AT_LOCATION[m[K(__VA_ARGS__); \
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:575:35:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG_COND[m[K’
+  575 | #define ROS_LOG(level, name, ...) [01;36m[KROS_LOG_COND[m[K(true, level, name, __VA_ARGS__)
+      |                                   [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/rosconsole/macros_generated.h:162:23:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG[m[K’
+  162 | #define ROS_WARN(...) [01;36m[KROS_LOG[m[K(::ros::console::levels::Warn, ROSCONSOLE_DEFAULT_NAME, __VA_ARGS__)
+      |                       [01;36m[K^~~~~~~[m[K
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:133:21:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_WARN[m[K’
+  133 |                     [01;36m[KROS_WARN[m[K("Data too long: %d", expected_data_length);
+      |                     [01;36m[K^~~~~~~~[m[K
+[01m[K/home/robocon/RC/rc3_ws/src/slampkg/src/serial_test.cpp:133:47:[m[K [01;36m[Knote: [m[Kformat string is defined here
+  133 |                     ROS_WARN("Data too long: [01;36m[K%d[m[K", expected_data_length);
+      |                                              [01;36m[K~^[m[K
+      |                                               [01;36m[K|[m[K
+      |                                               [01;36m[Kint[m[K
+      |                                              [32m[K%ld[m[K
+/usr/bin/ld: CMakeFiles/serial_node.dir/src/serial_test.cpp.o: in function `cameraInfoCallback(boost::shared_ptr<sensor_msgs::CameraInfo_<std::allocator<void> > const> const&)':
+serial_test.cpp:(.text+0x1998): undefined reference to `tf2_ros::TransformBroadcaster::TransformBroadcaster()'
+/usr/bin/ld: serial_test.cpp:(.text+0x1abd): undefined reference to `tf2_ros::TransformBroadcaster::sendTransform(geometry_msgs::TransformStamped_<std::allocator<void> > const&)'
+collect2: error: ld returned 1 exit status
+make[2]: *** [CMakeFiles/serial_node.dir/build.make:103：/home/robocon/RC/rc3_ws/devel/.private/slampkg/lib/slampkg/serial_node] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:455：CMakeFiles/serial_node.dir/all] 错误 2
+make: *** [Makefile:141：all] 错误 2

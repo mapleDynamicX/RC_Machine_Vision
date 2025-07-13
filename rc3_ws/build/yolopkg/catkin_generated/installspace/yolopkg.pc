@@ -1,0 +1,8 @@
+prefix=/home/robocon/RC/rc3_ws/install
+
+Name: yolopkg
+Description: Description of yolopkg
+Version: 0.1.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp sensor_msgs cv_bridge vision_msgs

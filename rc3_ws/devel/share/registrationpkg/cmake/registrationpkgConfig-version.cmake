@@ -1,0 +1,1 @@
+/home/robocon/RC/rc3_ws/devel/.private/registrationpkg/share/registrationpkg/cmake/registrationpkgConfig-version.cmake

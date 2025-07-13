@@ -1,0 +1,1 @@
+/home/robocon/RC/rc3_ws/devel/.private/bridgepkg/share/bridgepkg/cmake/bridgepkgConfig.cmake

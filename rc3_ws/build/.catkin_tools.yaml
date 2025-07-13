@@ -1,0 +1,6 @@
+devel_space: /home/robocon/RC/rc3_ws/devel
+install: false
+install_space: /home/robocon/RC/rc3_ws/install
+profile: default
+source_space: /home/robocon/RC/rc3_ws/src
+workspace: /home/robocon/RC/rc3_ws

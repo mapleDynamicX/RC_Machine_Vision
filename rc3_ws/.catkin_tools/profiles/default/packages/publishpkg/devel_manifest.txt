@@ -1,0 +1,5 @@
+publishpkg
+/home/robocon/RC/rc3_ws/devel/.private/publishpkg/lib/publishpkg/publisher.py /home/robocon/RC/rc3_ws/devel/lib/publishpkg/publisher.py
+/home/robocon/RC/rc3_ws/devel/.private/publishpkg/lib/pkgconfig/publishpkg.pc /home/robocon/RC/rc3_ws/devel/lib/pkgconfig/publishpkg.pc
+/home/robocon/RC/rc3_ws/devel/.private/publishpkg/share/publishpkg/cmake/publishpkgConfig-version.cmake /home/robocon/RC/rc3_ws/devel/share/publishpkg/cmake/publishpkgConfig-version.cmake
+/home/robocon/RC/rc3_ws/devel/.private/publishpkg/share/publishpkg/cmake/publishpkgConfig.cmake /home/robocon/RC/rc3_ws/devel/share/publishpkg/cmake/publishpkgConfig.cmake

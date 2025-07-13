@@ -1,0 +1,1 @@
+/home/robocon/RC/rc3_ws/devel/.private/publishpkg/lib/publishpkg/publisher.py

@@ -1,0 +1,5 @@
+[35m[1mScanning dependencies of target sub_bbox_node[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/sub_bbox_node.dir/src/sub_bbox.cpp.o[0m
+[ 75%] Built target yolo_detector_node
+[100%] [32m[1mLinking CXX executable /home/robocon/RC/rc3_ws/devel/.private/yolopkg/lib/yolopkg/sub_bbox_node[0m
+[100%] Built target sub_bbox_node
