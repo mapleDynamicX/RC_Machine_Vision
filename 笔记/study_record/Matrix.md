@@ -1,0 +1,176 @@
+# Matrix(矩阵)
+
+## 基本旋转矩阵 (绕坐标轴)
+
+​**​1.绕 X 轴旋转角度 θ：​**
+
+![](/home/maple/笔记/images/2025-07-10-16-24-26-RX.png)
+
+**2.绕 Y 轴旋转角度 θ**
+
+<img title="" src="file:///home/maple/笔记/images/2025-07-10-16-25-00-RY.png" alt="" width="327">
+
+​**3.​绕 Z 轴旋转角度 θ：​**
+
+<img src="file:///home/maple/笔记/images/2025-07-10-16-25-47-RZ.png" title="" alt="" width="324">
+
+## ​齐次变换矩阵结构
+
+![](/home/maple/笔记/images/2025-07-10-16-51-30-T.png)
+
+若需将点从坐标系 A 到坐标系 C：
+
+```
+P_c = T_{c←a} * P_a
+```
+
+> - ​**​链式变换推导​**​：
+>   
+>   - 已知：
+>     - `T_{b←a}`：从 A 到 B 的变换
+>     - `T_{c←b}`：从 B 到 C 的变换
+>   - 则 ​**​T_{c←a} = T_{c←b} * T_{b←a}​**​
+
+```cpp
+#include <Eigen/Geometry>
+// 定义变换矩阵 (A→B 和 B→C)
+Eigen::Affine3d T_b_a; // A→B 变换 (注意变量命名方向)
+Eigen::Affine3d T_c_b; // B→C 变换
+// 设置变换参数 (示例)
+T_b_a = Eigen::Translation3d(2, 0, 0) * Eigen::Matrix3d::Identity();
+T_c_b = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+// 合成总变换 A→C
+Eigen::Affine3d T_c_a = T_c_b * T_b_a;
+// 定义点 (A坐标系)
+Eigen::Vector3d P_a(1, 0, 0);
+// 转换为齐次坐标
+Eigen::Vector4d P_a_homog = (Eigen::Vector4d() << P_a, 1).finished();
+// 坐标转换
+Eigen::Vector4d P_c_homog = T_c_a.matrix() * P_a_homog;
+Eigen::Vector3d P_c = P_c_homog.head<3>();
+std::cout << "C系坐标: " << P_c.transpose(); // 输出: 0 3 0
+```
+
+## **旋转顺序​**​：通常按Z-Y-X顺序（内旋）或X-Y-Z顺序（外旋）组合，PCL默认使用​**​Z-Y-X顺序​**​
+
+​**​单位​**​：角度需转换为​**​弧度制​**​（Eigen库要求）
+
+### **示例：**
+
+```cpp
+include <pcl/common/transforms.h>
+#include <Eigen/Geometry>
+Eigen::Matrix3f createRotationMatrix(float rx, float ry, float rz) {
+    // 转换为弧度
+    rx = rx * M_PI / 180.0f; // Roll (绕X轴)
+    ry = ry * M_PI / 180.0f; // Pitch (绕Y轴)
+    rz = rz * M_PI / 180.0f; // Yaw (绕Z轴)
+    // 创建绕各轴的旋转矩阵
+    Eigen::Matrix3f R_x;
+    R_x << 1, 0, 0,
+           0, cos(rx), -sin(rx),
+           0, sin(rx), cos(rx);
+    Eigen::Matrix3f R_y;
+    R_y << cos(ry), 0, sin(ry),
+           0, 1, 0,
+           -sin(ry), 0, cos(ry);
+    Eigen::Matrix3f R_z;
+    R_z << cos(rz), -sin(rz), 0,
+           sin(rz), cos(rz), 0,
+           0, 0, 1;
+    // 组合旋转矩阵 (Z-Y-X顺序: R = R_z * R_y * R_x)
+    return R_z * R_y * R_x;
+}
+方法2：使用Eigen的AngleAxis（更简洁）
+Eigen::Matrix3f createRotationMatrix(float rx, float ry, float rz) {
+    Eigen::AngleAxisf roll(rx * M_PI/180, Eigen::Vector3f::UnitX());
+    Eigen::AngleAxisf pitch(ry * M_PI/180, Eigen::Vector3f::UnitY());
+    Eigen::AngleAxisf yaw(rz * M_PI/180, Eigen::Vector3f::UnitZ());
+    Eigen::Quaternionf q = yaw * pitch * roll; // Z-Y-X顺序
+    return q.toRotationMatrix();
+}
+```
+
+### 创建平移向量
+
+```cpp
+Eigen::Vector3f createTranslationVector(float tx, float ty, float tz) {
+    Eigen::Vector3f translation(tx, ty, tz);
+    return translation;
+}
+```
+
+### 合成变化矩阵
+
+```cpp
+// 分离和组合现有旋转矩阵与平移向量
+Eigen::Matrix4f combineRotationAndTranslation(const Eigen::Matrix3f& rotation, const Eigen::Vector3f& translation) 
+{
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+    transform.block<3, 3>(0, 0) = rotation;
+    transform.block<3, 1>(0, 3) = translation;
+    return transform;
+}
+```
+
+### Eigen::Matrix3f 和 Eigen::Vector3f 详解
+
+#### **Eigen::Matrix3f**
+
+3x3 单精度浮点矩阵，内存布局为​**​列优先​**​（Column-major）
+
+```
+地址布局：  
+0: m00  3: m01  6: m02  
+1: m10  4: m11  7: m12  
+2: m20  5: m21  8: m22  
+```
+
+#### **​Eigen::Vector3f​**
+
+3维单精度浮点列向量（等价于`Matrix<float, 3, 1>`）
+
+```
+地址布局：  
+0: x  
+1: y  
+2: z 
+```
+
+### **数据访问方法**
+
+```cpp
+// 矩阵访问 (行,列)
+Eigen::Matrix3f m;
+m(0,0) = 1.0f;  // 设置第0行0列元素
+float val = m(2,1); // 读取第2行1列元素
+// 向量访问 [索引]
+Eigen::Vector3f v;
+v(0) = 2.0f;    // 等效于v.x()
+v[1] = 3.0f;    // 数组语法 (等效于v.y())
+float z = v.z(); // 通过成员函数访问
+
+//通过指针访问原始数据​​
+float* matrix_data = m.data();
+matrix_data[0] = 1.0f; // m(0,0)
+// 向量数据指针（连续内存）
+float* vec_data = v.data();
+vec_data[2] = 5.0f; // v.z()
+
+//初始化语法​​
+// 逗号初始化（按行填充）
+Eigen::Matrix3f m;
+m << 1.0f, 2.0f, 3.0f,
+     4.0f, 5.0f, 6.0f,
+     7.0f, 8.0f, 9.0f;
+// 向量初始化
+Eigen::Vector3f v1(1.0f, 2.0f, 3.0f); // 构造函数
+Eigen::Vector3f v2; v2 << 4.0f, 5.0f, 6.0f;  // 逗号初始化
+// 特殊初始化
+m = Eigen::Matrix3f::Identity(); // 单位矩阵
+v = Eigen::Vector3f::Zero();     // 零向量
+```
+
+## 点云不动公式推导
+
+![](/home/maple/笔记/images/2025-07-13-17-53-41-点云.png)
