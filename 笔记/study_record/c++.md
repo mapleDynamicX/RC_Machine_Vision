@@ -309,3 +309,173 @@ int main() {
     return 0;
 }
 ```
+
+## 友元函数的主要作用
+
+> ### 访问私有成员
+> 
+> - ​**​核心功能​**​：允许外部函数访问类的私有和保护成员
+> 
+> - ​**​使用场景​**​：需要跨越封装边界的特殊访问权限
+
+### 友元函数关键特性
+
+| 特性     | 说明                                      |
+| ------ | --------------------------------------- |
+| 单向性    | A 声明 B 为友元 → B 可访问 A 的私有成员 (不是相互的)      |
+| 无传递性   | A 声明 B 为友元，B 声明 C 为友元 → C 不能访问 A 的私有成员  |
+| 类外定义   | 友元函数在类外部实现，没有类作用域限制                     |
+| 访问位置自由 | 可以在类定义的任意位置声明（public/protected/private） |
+| 非成员性质  | 友元函数不是类的成员函数，没有 `this`指针                |
+
+### **在 C++ 中，互斥锁 (`std::mutex`) 用于保护共享资源不被多个线程同时访问。以下是加锁和解锁的详细步骤及最佳实践**
+
+> ### **​核心方法​**​
+> 
+> 1. ​**​`lock()`​**​ - 阻塞式加锁（若锁已被占用，则阻塞等待）
+> 
+> 2. ​**​`unlock()`​**​ - 手动释放锁
+> 
+> 3. ​**​`try_lock()`​**​ - 非阻塞尝试加锁（成功返回 `true`，失败返回 `false`）
+
+```cpp
+#include <mutex>
+std::mutex mtx; // 声明互斥锁
+void critical_section() {
+    mtx.lock();   // 加锁（阻塞直到获得锁）    
+    // ... 操作共享资源（临界区代码）...
+    mtx.unlock(); // 解锁
+}
+```
+
+### 共享资源（Shared Resource）
+
+​**​共享资源​**​是指在多线程或多进程环境中，能被多个执行单元（如线程、进程）同时访问的数据或资源。这些资源通常存储在共享内存区域、文件系统、数据库等地方。由于多个执行单元可能​**​并发​**​地读写同一资源，如果没有适当的同步机制，会导致​**​数据竞争（Data Race）​**​，引发不可预测的结果（如数据损坏、程序崩溃）。
+
+#### 常见的共享资源类型：
+
+| ​**​资源类型​**​ | ​**​示例​**​        |
+| ------------ | ----------------- |
+| 内存数据         | 全局变量、静态变量、堆内存对象   |
+| 文件/外部设备      | 文件、网络套接字、打印机      |
+| 操作系统资源       | 数据库连接、GUI控件、系统API |
+
+## c表较字符串
+
+```cpp
+#include <cstring>
+#include <iostream>
+
+int main() {
+    const char* str1 = "hello";
+    const char* str2 = "world";
+    const char* str3 = "hello";
+
+    // 比较结果:
+    // 0 表示相等
+    // <0 表示 str1 在字典序中小于 str2
+    // >0 表示 str1 在字典序中大于 str2
+    int result1 = std::strcmp(str1, str2);  // 返回负值 (h < w)
+    int result2 = std::strcmp(str1, str3);  // 返回 0 (相等)
+
+    if (result1 == 0) {
+        std::cout << "Strings are equal" << std::endl;
+    } else if (result1 < 0) {
+        std::cout << str1 << " comes before " << str2 << std::endl;
+    } else {
+        std::cout << str1 << " comes after " << str2 << std::endl;
+    }
+}
+```
+
+**c++使用运算符重载或成员函数进行比较（推荐）**
+
+```cpp
+#include <string>
+#include <iostream>
+
+int main() {
+    std::string s1 = "apple";
+    std::string s2 = "banana";
+    std::string s3 = "Apple";  // 注意大小写敏感
+
+    // 相等性比较
+    if (s1 == s3) {
+        std::cout << "Equal (case-sensitive)" << std::endl;  // 不会执行
+    }
+
+    // 字典序比较
+    if (s1 < s2) {  // a < b
+        std::cout << s1 << " comes before " << s2 << std::endl;  // 会执行
+    }
+
+    // 不等式比较
+    if (s1 != "orange") {
+        std::cout << "Not an orange" << std::endl;
+    }
+}
+```
+
+### 1. ​**​在无竞争（no-contention）情况下的时间估算​**​：
+
+- 假设`shared_data_mutex2`是一个标准的互斥锁（如C++11的`std::mutex`），并且没有其他线程持有或竞争该锁，则锁定和解锁操作通常非常快。
+
+- 在現代多核CPU（如Intel或AMD的x86_64架构，时钟频率约为2-4 GHz）上：
+  
+  - `lock()`操作：在无竞争时，通常涉及一个原子指令（如compare-and-swap或类似操作），耗时约 ​**​20-100 纳秒​**​（nanoseconds）。
+  
+  - `unlock()`操作：通常是一个简单的原子存储指令，耗时稍短，约 ​**​10-50 纳秒​**​（因为解锁不需要复杂的状态检查）。
+  
+  - 总时间（从`lock()`开始到`unlock()`结束）：由于两个操作是连续的，总耗时大约在 ​**​50 到 200 纳秒​**​ 之间。
+
+- 原因：
+  
+  - 这些操作在用户空间高效执行（例如，使用Linux的futex或Windows的轻量级锁），避免了系统调用。
+  
+  - 编译器优化（如内联）可以进一步减少函数调用开销。
+  
+  - 例如，在3 GHz CPU上，一个时钟周期约0.33纳秒，原子操作可能需要10-30个周期。
+
+### 2. ​**​在有竞争（contention）情况下的时间估算​**​：
+
+- 如果有其他线程持有锁或正在等待，`lock()`操作可能导致线程阻塞（等待），时间会显著增加：
+  
+  - `lock()`时间：可能从几微秒（µs）到几毫秒（ms），甚至更长，具体取决于线程调度、锁的实现（如自旋锁或休眠锁）以及系统负载。
+  
+  - `unlock()`时间：通常仍然很快（10-50纳秒），因为它只是释放锁，但如果有等待线程，操作系统可能需要唤醒其他线程，增加少量开销。
+  
+  - 总时间：无法可靠估算，可能从微秒级到数毫秒不等。
+
+- 在实际多线程应用中，竞争是常见情况，所以如果有共享数据访问，应尽量避免锁竞争或使用更高效的并发机制（如原子变量或无锁数据结构）。
+
+## 使用对象引用（推荐），线程
+
+```cpp
+void count(registration2& pos)  // 修改为接受引用参数
+{
+    while(ros::ok())
+    {
+        ros::Time tic = ros::Time::now();
+        pos.calculate();  // 使用传入的对象
+        ROS_INFO("total Time: %f", (ros::Time::now() - tic).toSec());
+    }
+    std::cout<<"out count id: "<< std::this_thread::get_id() << std::endl;
+}
+
+int main(int argc, char** argv)
+{
+    // ... [其他初始化代码] ...
+    registration2 position;  // 在主线程中创建对象
+
+    // 使用std::ref传递对象引用
+    std::thread worker(count, std::ref(position));
+
+    // ... [其余代码保持不变] ...
+}
+```
+
+关键修改：
+
+1. 将 `count()`函数改为接受 `registration2&`引用参数
+
+2. 在创建线程时使用 `std::ref(position)`传递对象引用

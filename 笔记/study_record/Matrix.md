@@ -174,3 +174,145 @@ v = Eigen::Vector3f::Zero();     // 零向量
 ## 点云不动公式推导
 
 ![](/home/maple/笔记/images/2025-07-13-17-53-41-点云.png)
+
+## 打印矩阵
+
+```cpp
+for (int i = 0; i < matrix.rows(); ++i) {
+    for (int j = 0; j < matrix.cols(); ++j) {
+        std::cout << matrix(i, j) << "\t";
+    }
+    std::cout << std::endl;
+}
+```
+
+## 打印向量
+
+```cpp
+#include <iostream>
+#include <Eigen/Dense>
+int main() {
+    Eigen::Vector3f v(0.1f, 0.2f, 0.3f);
+    for (int i = 0; i < v.size(); ++i) {
+        std::cout << "Element " << i << ": " << v[i] << "\n";
+    }
+    return 0;
+}
+```
+
+## 点云从当前坐标变换成世界坐标
+
+```cpp
+#include<ros/ros.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/common/transforms.h> // 包含变换函数
+#include <Eigen/Geometry>
+#include<iostream>
+
+Eigen::Matrix3f createRotationMatrix(float rx, float ry, float rz) {
+    // 转换为弧度
+    rx = rx * M_PI / 180.0f; // Roll (绕X轴)
+    ry = ry * M_PI / 180.0f; // Pitch (绕Y轴)
+    rz = rz * M_PI / 180.0f; // Yaw (绕Z轴)
+    // 创建绕各轴的旋转矩阵
+    Eigen::Matrix3f R_x;
+    R_x << 1, 0, 0,
+           0, cos(rx), -sin(rx),
+           0, sin(rx), cos(rx);
+    Eigen::Matrix3f R_y;
+    R_y << cos(ry), 0, sin(ry),
+           0, 1, 0,
+           -sin(ry), 0, cos(ry);
+    Eigen::Matrix3f R_z;
+    R_z << cos(rz), -sin(rz), 0,
+           sin(rz), cos(rz), 0,
+           0, 0, 1;
+    // 组合旋转矩阵 (Z-Y-X顺序: R = R_z * R_y * R_x)
+    return R_z * R_y * R_x;
+}
+Eigen::Vector3f createTranslationVector(float tx, float ty, float tz) {
+    Eigen::Vector3f translation(tx, ty, tz);
+    return translation;
+}
+// 分离和组合现有旋转矩阵与平移向量
+Eigen::Matrix4f combineRotationAndTranslation(const Eigen::Matrix3f& rotation, const Eigen::Vector3f& translation) {
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+    transform.block<3, 3>(0, 0) = rotation;
+    transform.block<3, 1>(0, 3) = translation;
+    return transform;
+}
+void test1()
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    // Fill in the cloud data
+    cloud->width  = 1;
+    cloud->height = 1;
+    cloud->points.resize (cloud->width * cloud->height);
+    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    {
+        cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+        cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+        cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    }
+    cloud->points[0].x = 2.0f;
+    cloud->points[0].y = 0;
+    cloud->points[0].z = 1;
+    //旋转
+    Eigen::Matrix3f rot = createRotationMatrix(0, 0, 30);
+    //平移
+    Eigen::Vector3f tra = createTranslationVector(1, 1, 0);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
+    //先旋转后平移
+    Eigen::Matrix4f T = combineRotationAndTranslation(rot, tra);
+    pcl::transformPointCloud(*cloud, *output, T);
+    for(int i = 0; i < output->points.size(); i++)
+    {
+        std::cout<<"x: "<<output->points[i].x<<" y: "<<output->points[i].y<<" z: "<<output->points[i].z<<std::endl;
+    }
+}
+```
+
+> 旋转
+> 
+> 世界坐标系向当前坐标系的旋转（逆时针为正）
+> 
+> 平移
+> 
+> 当前坐标相对于是世界坐标系的坐标
+
+### 内参矩阵的结构（通常表示为 K）
+
+内参矩阵是一个 ​**​3×3​**​ 的上三角矩阵，具有以下标准形式：
+
+```
+内参矩阵 K = [
+  [fx,    s,  cx],
+  [    0,  fy, cy],
+  [    0,     0,    1.0]
+]
+```
+
+#### 各参数的含义：
+
+- ​**​焦距参数​**​：
+  
+  - fx​：以像素为单位表示的相机在x轴方向的等效焦距。
+  
+  - fy​：以像素为单位表示的相机在y轴方向的等效焦距。
+    
+    *（当图像传感器像素为正方形时，通常 fx​≈fy​）*
+
+- ​**​主点坐标​**​：
+  
+  - cx​：相机光心（主点）在图像中的x坐标（像素单位）。
+  
+  - cy​：相机光心（主点）在图像中的y坐标（像素单位）。
+    
+    *（理想情况下位于图像中心）*
+
+- ​**​轴倾斜因子​**​ s（Skew）：
+  
+  描述图像坐标轴之间的夹角倾斜程度（单位为像素）。
+  
+  *（现代相机多为矩形像素，通常 s≈0，可忽略）*

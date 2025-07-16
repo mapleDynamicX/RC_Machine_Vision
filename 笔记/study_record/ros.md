@@ -232,3 +232,158 @@ ros::Time end = ros::Time::now();
 ros::Duration duration = end - start;
 double duration_sec = duration.toSec(); // 转换为秒
 ```
+
+### 1. ​**​消息分发机制​**​
+
+- 当发布者向话题发送一条消息时，ROS核心（TCPROS/UDPROS层）会​**​同时复制​**​该消息到所有连接的订阅者。
+
+- 理论上，所有订阅节点应​**​同时收到消息​**​，因为ROS不会主动为订阅者排序。
+
+### 2. ​**​实际接收顺序的差异​**​
+
+- ​**​网络延迟​**​：不同节点可能因网络路径不同导致消息到达时间略有差异（尤其在分布式系统中）。
+
+- ​**​节点负载​**​：如果订阅者节点的CPU繁忙，处理消息的Callback被调用的时间可能有微小延迟。
+
+- ​**​线程调度​**​：ROS使用多线程处理回调，线程调度可能导致某个订阅者的回调函数稍晚执行（例如：使用`AsyncSpinner`时）。
+
+## 在 ROS1（特别是 C++）中，​可以在子线程中使用 ros::spin()，但这需要谨慎处理，因为不正确的使用会导致阻塞或资源冲突问题。以下是关键原因和注意事项：
+
+### 1. ​**​主线程与 `ros::spin()`的典型用法​**​
+
+- ROS 的默认设计中，`ros::spin()`是一个​**​阻塞函数​**​，它会循环处理回调队列直到节点关闭。
+
+- 如果直接在 `main()`的主线程调用 `ros::spin()`，主线程会被阻塞，无法执行其他任务。
+
+### 2. ​**​潜在问题与风险​**​
+
+- ​**​阻塞子线程​**​：`ros::spin()`会独占子线程，导致该线程无法处理其他任务。
+
+- ​**​多线程竞争​**​：
+  
+  - ROS 的回调是线程安全的，但​**​您的回调函数本身需要确保线程安全​**​。
+  
+  - 如果回调函数访问共享资源（如全局变量、类成员），需使用互斥锁（如 `std::mutex`）。
+
+- ​**​资源泄漏​**​：未正确关闭线程可能导致 ROS 回调队列积压。
+
+### 3. ​**​更推荐的做法：`AsyncSpinner`​**​
+
+```cpp
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "my_node");
+    ros::NodeHandle nh;
+    // 创建 AsyncSpinner 使用 4 个线程处理回调
+    ros::AsyncSpinner spinner(4); 
+    spinner.start();  // 非阻塞，后台处理回调
+
+    // 主线程继续执行其他任务
+    while (ros::ok()) {
+        // ... 主线程逻辑 ...
+    }
+    ros::waitForShutdown(); // 等待节点关闭
+    return 0;
+}
+```
+
+```cpp
+// ROS头文件，包含ROS系统的基本功能和类声明
+#include <ros/ros.h>
+
+// 主函数，ROS节点的标准入口点
+int main(int argc, char** argv) {
+  // 初始化ROS系统，设置节点名称为"node_name"
+  // 节点名在ROS网络中必须是唯一的标识符
+  ros::init(argc, argv, "node_name");
+
+  // 创建节点句柄，用于管理ROS资源（如订阅者/发布者/服务）
+  // 这是与ROS系统通信的主要接口点
+  ros::NodeHandle nh;
+
+  // 创建异步spinner对象，指定使用4个工作线程处理回调
+  // 多线程模式允许同时处理多个订阅消息和服务请求
+  ros::AsyncSpinner spinner(4); // 或 MultiThreadedSpinner
+
+  // 启动异步spinner，使回调函数能在后台线程执行
+  // 开启后不会阻塞主线程的执行
+  spinner.start();
+
+  // ... 此处添加ROS对象的初始化代码 ...
+  // 例如：ros::Subscriber, ros::Publisher, ros::ServiceServer 等
+  // 创建的所有消息收发对象将共享工作线程池
+
+  // 阻塞主线程直到节点被关闭（如Ctrl+C或ros::shutdown()调用）
+  // 保证节点运行时不会立即退出
+  ros::waitForShutdown();
+
+  // 当ros::shutdown()被调用时，spinner会自动停止
+  // 所有工作线程将有序退出，无需手动停止
+  return 0;
+}
+```
+
+## 将geometry_msgs::TransformStamped::ConstPtr& msg  转化为变化矩阵
+
+### 示例1.
+
+```cpp
+// 将TransformStamped转换为4x4齐次变换矩阵
+Eigen::Matrix4d transformToMatrix(const geometry_msgs::TransformStamped& transform)
+{
+    // 提取平移分量
+    Eigen::Vector3d translation;
+    translation.x() = transform.transform.translation.x;
+    translation.y() = transform.transform.translation.y;
+    translation.z() = transform.transform.translation.z;
+
+    // 提取旋转四元数
+    Eigen::Quaterniond rotation;
+    rotation.x() = transform.transform.rotation.x;
+    rotation.y() = transform.transform.rotation.y;
+    rotation.z() = transform.transform.rotation.z;
+    rotation.w() = transform.transform.rotation.w;
+
+    // 创建4x4齐次变换矩阵
+    Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity();
+    // 设置左上角3x3旋转部分，（四元数转欧拉角）
+    matrix.block<3,3>(0,0) = rotation.toRotationMatrix();
+    // 设置右上角3x1平移部分
+    matrix.block<3,1>(0,3) = translation;
+
+    return matrix;
+}
+```
+
+### 示例2.
+
+```cpp
+void transformCallback(const geometry_msgs::TransformStamped::ConstPtr& msg) {
+    // 1. 解析时间戳和坐标系ID
+    ROS_INFO("Received transform from [%s] to [%s]", 
+             msg->header.frame_id.c_str(), 
+             msg->child_frame_id.c_str());
+
+    // 2. 提取平移和旋转数据
+    Eigen::Vector3d translation(
+        msg->transform.translation.x,
+        msg->transform.translation.y,
+        msg->transform.translation.z
+    );
+
+    Eigen::Quaterniond rotation(
+        msg->transform.rotation.w,
+        msg->transform.rotation.x,
+        msg->transform.rotation.y,
+        msg->transform.rotation.z
+    );
+
+    // 3. 创建4x4齐次变换矩阵
+    Eigen::Affine3d transform = Eigen::Affine3d::Identity();
+    transform.translation() = translation;
+    transform.rotate(rotation);
+
+    // 获取变换矩阵的4x4矩阵形式
+    Eigen::Matrix4d transformation_matrix = transform.matrix();
+
+}
+```
