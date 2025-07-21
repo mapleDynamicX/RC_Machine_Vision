@@ -1,0 +1,1 @@
+/home/robocon/RC/project5_ws/devel/.private/yolopkg/share/yolopkg/cmake/yolopkgConfig.cmake

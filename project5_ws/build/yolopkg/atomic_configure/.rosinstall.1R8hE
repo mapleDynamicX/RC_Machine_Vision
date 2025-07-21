@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/robocon/RC/project5_ws/devel/.private/yolopkg/setup.sh

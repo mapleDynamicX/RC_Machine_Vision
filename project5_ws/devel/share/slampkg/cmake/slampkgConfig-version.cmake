@@ -1,0 +1,1 @@
+/home/robocon/RC/project5_ws/devel/.private/slampkg/share/slampkg/cmake/slampkgConfig-version.cmake

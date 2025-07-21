@@ -1,0 +1,8 @@
+prefix=/home/robocon/RC/project5_ws/install
+
+Name: slampkg
+Description: Description of slampkg
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

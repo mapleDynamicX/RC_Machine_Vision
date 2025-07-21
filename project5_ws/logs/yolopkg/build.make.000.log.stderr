@@ -1,0 +1,61 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/ros.h:40[m[K,
+                 from [01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:1[m[K:
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:[m[K In function ‘[01m[Kvoid boundingBoxCallback(const ConstPtr&)[m[K’:
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:44:18:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%d[m[K’ expects argument of type ‘[01m[Kint[m[K’, but argument 8 has type ‘[01m[Kstd::vector<vision_msgs::BoundingBox2D_<std::allocator<void> >, std::allocator<vision_msgs::BoundingBox2D_<std::allocator<void> > > >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K-Wformat=[m[K]
+   44 |         ROS_INFO([01;35m[K"Total boxes detected: %d"[m[K, [32m[Kmsg->boxes.size()[m[K);
+      |                  [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~[m[K  [32m[K~~~~~~~~~~~~~~~~~[m[K
+      |                                                             [32m[K|[m[K
+      |                                                             [32m[Kstd::vector<vision_msgs::BoundingBox2D_<std::allocator<void> >, std::allocator<vision_msgs::BoundingBox2D_<std::allocator<void> > > >::size_type {aka long unsigned int}[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:351:165:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER[m[K’
+  351 |     ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, [01;36m[K__VA_ARGS__[m[K)
+      |                                                                                                                                                                     [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:390:7:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION[m[K’
+  390 |       [01;36m[KROSCONSOLE_PRINT_AT_LOCATION[m[K(__VA_ARGS__); \
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:575:35:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG_COND[m[K’
+  575 | #define ROS_LOG(level, name, ...) [01;36m[KROS_LOG_COND[m[K(true, level, name, __VA_ARGS__)
+      |                                   [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/rosconsole/macros_generated.h:110:23:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG[m[K’
+  110 | #define ROS_INFO(...) [01;36m[KROS_LOG[m[K(::ros::console::levels::Info, ROSCONSOLE_DEFAULT_NAME, __VA_ARGS__)
+      |                       [01;36m[K^~~~~~~[m[K
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:44:9:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_INFO[m[K’
+   44 |         [01;36m[KROS_INFO[m[K("Total boxes detected: %d", msg->boxes.size());
+      |         [01;36m[K^~~~~~~~[m[K
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:44:42:[m[K [01;36m[Knote: [m[Kformat string is defined here
+   44 |         ROS_INFO("Total boxes detected: [01;36m[K%d[m[K", msg->boxes.size());
+      |                                         [01;36m[K~^[m[K
+      |                                          [01;36m[K|[m[K
+      |                                          [01;36m[Kint[m[K
+      |                                         [32m[K%ld[m[K
+In file included from [01m[K/opt/ros/noetic/include/ros/ros.h:40[m[K,
+                 from [01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:1[m[K:
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:50:14:[m[K [01;35m[Kwarning: [m[Kformat ‘[01m[K%d[m[K’ expects argument of type ‘[01m[Kint[m[K’, but argument 8 has type ‘[01m[Kstd::vector<vision_msgs::BoundingBox2D_<std::allocator<void> >, std::allocator<vision_msgs::BoundingBox2D_<std::allocator<void> > > >::size_type[m[K’ {aka ‘[01m[Klong unsigned int[m[K’} [[01;35m[K-Wformat=[m[K]
+   50 |     ROS_INFO([01;35m[K"Total boxes detected: %d"[m[K, [32m[Kmsg->boxes.size()[m[K);
+      |              [01;35m[K^~~~~~~~~~~~~~~~~~~~~~~~~~[m[K  [32m[K~~~~~~~~~~~~~~~~~[m[K
+      |                                                         [32m[K|[m[K
+      |                                                         [32m[Kstd::vector<vision_msgs::BoundingBox2D_<std::allocator<void> >, std::allocator<vision_msgs::BoundingBox2D_<std::allocator<void> > > >::size_type {aka long unsigned int}[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:351:165:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER[m[K’
+  351 |     ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, [01;36m[K__VA_ARGS__[m[K)
+      |                                                                                                                                                                     [01;36m[K^~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:390:7:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROSCONSOLE_PRINT_AT_LOCATION[m[K’
+  390 |       [01;36m[KROSCONSOLE_PRINT_AT_LOCATION[m[K(__VA_ARGS__); \
+      |       [01;36m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/ros/console.h:575:35:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG_COND[m[K’
+  575 | #define ROS_LOG(level, name, ...) [01;36m[KROS_LOG_COND[m[K(true, level, name, __VA_ARGS__)
+      |                                   [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/opt/ros/noetic/include/rosconsole/macros_generated.h:110:23:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_LOG[m[K’
+  110 | #define ROS_INFO(...) [01;36m[KROS_LOG[m[K(::ros::console::levels::Info, ROSCONSOLE_DEFAULT_NAME, __VA_ARGS__)
+      |                       [01;36m[K^~~~~~~[m[K
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:50:5:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KROS_INFO[m[K’
+   50 |     [01;36m[KROS_INFO[m[K("Total boxes detected: %d", msg->boxes.size());
+      |     [01;36m[K^~~~~~~~[m[K
+[01m[K/home/robocon/RC/project5_ws/src/yolopkg/src/sub_bbox.cpp:50:38:[m[K [01;36m[Knote: [m[Kformat string is defined here
+   50 |     ROS_INFO("Total boxes detected: [01;36m[K%d[m[K", msg->boxes.size());
+      |                                     [01;36m[K~^[m[K
+      |                                      [01;36m[K|[m[K
+      |                                      [01;36m[Kint[m[K
+      |                                     [32m[K%ld[m[K
+/usr/bin/ld: warning: libopencv_imgcodecs.so.4.2, needed by /opt/ros/noetic/lib/libcv_bridge.so, may conflict with libopencv_imgcodecs.so.409
+/usr/bin/ld: warning: libopencv_features2d.so.4.2, needed by /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.2.0, may conflict with libopencv_features2d.so.409
+/usr/bin/ld: warning: libopencv_imgproc.so.409, needed by /usr/local/lib/libopencv_imgcodecs.so.4.9.0, may conflict with libopencv_imgproc.so.4.2
+/usr/bin/ld: warning: libopencv_core.so.409, needed by /usr/local/lib/libopencv_imgcodecs.so.4.9.0, may conflict with libopencv_core.so.4.2

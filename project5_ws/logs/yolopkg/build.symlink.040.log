@@ -1,0 +1,8 @@
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/sub_img_node, /home/robocon/RC/project5_ws/devel/lib/yolopkg/sub_img_node)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/sub_bbox_node, /home/robocon/RC/project5_ws/devel/lib/yolopkg/sub_bbox_node)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/yolo_detector_node, /home/robocon/RC/project5_ws/devel/lib/yolopkg/yolo_detector_node)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/pub_img_node, /home/robocon/RC/project5_ws/devel/lib/yolopkg/pub_img_node)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/realsense_publisher.py, /home/robocon/RC/project5_ws/devel/lib/yolopkg/realsense_publisher.py)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/pkgconfig/yolopkg.pc, /home/robocon/RC/project5_ws/devel/lib/pkgconfig/yolopkg.pc)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/share/yolopkg/cmake/yolopkgConfig-version.cmake, /home/robocon/RC/project5_ws/devel/share/yolopkg/cmake/yolopkgConfig-version.cmake)
+Linked: (/home/robocon/RC/project5_ws/devel/.private/yolopkg/share/yolopkg/cmake/yolopkgConfig.cmake, /home/robocon/RC/project5_ws/devel/share/yolopkg/cmake/yolopkgConfig.cmake)

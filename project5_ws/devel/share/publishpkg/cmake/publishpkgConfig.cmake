@@ -1,0 +1,1 @@
+/home/robocon/RC/project5_ws/devel/.private/publishpkg/share/publishpkg/cmake/publishpkgConfig.cmake

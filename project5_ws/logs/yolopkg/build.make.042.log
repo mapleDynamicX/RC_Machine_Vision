@@ -1,0 +1,7 @@
+[35m[1mScanning dependencies of target pub_img_node[0m
+[ 25%] Built target sub_img_node
+[ 50%] Built target yolo_detector_node
+[ 75%] Built target sub_bbox_node
+[ 87%] [32mBuilding CXX object CMakeFiles/pub_img_node.dir/src/pub_img.cpp.o[0m
+[100%] [32m[1mLinking CXX executable /home/robocon/RC/project5_ws/devel/.private/yolopkg/lib/yolopkg/pub_img_node[0m
+[100%] Built target pub_img_node
