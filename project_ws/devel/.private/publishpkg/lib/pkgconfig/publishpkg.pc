@@ -1,8 +1,0 @@
-prefix=/home/maple/study/project_ws/devel/.private/publishpkg
-
-Name: publishpkg
-Description: Description of publishpkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

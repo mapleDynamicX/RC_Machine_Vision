@@ -1,4 +1,0 @@
-[35m[1mScanning dependencies of target registration_node[0m
-[ 50%] [32mBuilding CXX object CMakeFiles/registration_node.dir/src/registration_node.cpp.o[0m
-[100%] [32m[1mLinking CXX executable /home/maple/study/project_ws/devel/.private/registrationpkg/lib/registrationpkg/registration_node[0m
-[100%] Built target registration_node

@@ -1,1 +1,0 @@
-/home/maple/study/project_ws/devel/.private/bridgepkg/share/bridgepkg/cmake/bridgepkgConfig.cmake
