@@ -20,10 +20,7 @@ bool flag = false;
 
 void save_video(cv::Mat& image)
 {
-    if(flag)
-    {
-        return;
-    }
+
     //保存视屏
     // cv::VideoCapture cap("/home/maple/study/project5_ws/src/yolopkg/video/test.mp4"); // 0 为默认摄像头，也可替换为视频文件路径（如 "input.mp4"）
     // if (!cap.isOpened()) {
@@ -75,17 +72,18 @@ void save_video(cv::Mat& image)
         // cv::resize(frame, frame, cv::Size(640, 480)); // 调整帧尺寸（需与 writer 设置的尺寸一致）
 
         // 写入当前帧
-        writer.write(image);
-
+    writer.write(image);
+    std::cout<<"write"<<std::endl;
         // 显示实时画面（可选）
-    cv::imshow("Recording...", image);
-    if (cv::waitKey(30) == 'q') { // 按 'q' 键提前终止录制
-        std::cout << "用户手动终止录制。" << std::endl;
-        writer.release();
-        cv::destroyAllWindows();
-        //break;
-        flag = true;
-    }
+    //cv::imshow("Recording...", image);
+    //cv::waitKey(30);
+    // if (ros::ok()) { // 按 'q' 键提前终止录制
+    //     std::cout << "用户手动终止录制。" << std::endl;
+    //     writer.release();
+    //     cv::destroyAllWindows();
+    //     //break;
+    //     flag = true;
+    // }
 
         //frame_count++;
     //}
@@ -143,7 +141,7 @@ int main(int argc, char** argv) {
     // 2. 配置视频写入器（输出）
     // --------------------------
     // 输出路径、FourCC、帧率、帧尺寸
-    std::string output_path = "/home/maple/study/project5_ws/src/yolopkg/video/test2.mp4";
+    std::string output_path = "/home/robocon/RC/project5_ws/src/yolopkg/video/basket4.mp4";
     const char* fourcc = "mp4v"; // 或 "avc1"（H.264）、"h264"（需 FFmpeg 支持）
     //cv::VideoWriter writer;
 
@@ -157,7 +155,12 @@ int main(int argc, char** argv) {
         std::cerr << "错误：无法创建视频写入器！请检查编码格式或路径权限。" << std::endl;
         return -1;
     }
-    ros::spin();
+    while(ros::ok())
+    {
+        //std::cout << "xxxx" << std::endl;
+        
+        ros::spinOnce();
+    }
     writer.release();
     cv::destroyAllWindows();
     return 0;

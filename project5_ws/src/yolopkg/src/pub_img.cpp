@@ -9,13 +9,13 @@ void publish_img()
 {
     ros::NodeHandle nh("/");
     image_transport::ImageTransport it(nh);
-    image_transport::Publisher pub = it.advertise("camera/image_raw", 1);
+    image_transport::Publisher pub = it.advertise("/camera/color/image_raw", 1);
     // 或者使用普通发布者：ros::Publisher pub = nh.advertise<sensor_msgs::Image>("camera/image", 1);
 
     //cv::VideoCapture cap(2,cv::CAP_V4L2); // 打开摄像头  
     // cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
     // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    cv::VideoCapture cap("/home/robocon/RC/project5_ws/src/yolopkg/video/test.mp4");
+    cv::VideoCapture cap("/home/robocon/RC/project5_ws/src/yolopkg/video/basket.mp4");
     // cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
     // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
     if (!cap.isOpened()) {
@@ -25,7 +25,7 @@ void publish_img()
 
 
     //发布图像
-    ros::Rate rate(40); // 发布频率40Hz
+    ros::Rate rate(30); // 发布频率40Hz
     while (nh.ok()) {
         cv::Mat frame;
         cap >> frame;
@@ -63,7 +63,7 @@ void save_video()
     // 2. 配置视频写入器（输出）
     // --------------------------
     // 输出路径、FourCC、帧率、帧尺寸
-    std::string output_path = "/home/maple/study/project5_ws/src/yolopkg/video/test2.mp4";
+    std::string output_path = "/home/robocon/RC/project5_ws/src/yolopkg/video/test2.mp4";
     const char* fourcc = "mp4v"; // 或 "avc1"（H.264）、"h264"（需 FFmpeg 支持）
     cv::VideoWriter writer;
 

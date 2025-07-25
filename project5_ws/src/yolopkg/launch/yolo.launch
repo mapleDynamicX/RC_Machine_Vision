@@ -3,15 +3,15 @@
   <node pkg="yolopkg" type="yolo_detector_node" name="yolo_detector" output="screen">
     
     <param name="model_path" value="/home/robocon/RC/project5_ws/src/yolopkg/best_openvino_model/best"/>
-    <param name="conf_threshold" value="0.25"/>
-    <param name="iou_threshold" value="0.45"/>
+    <param name="conf_threshold" value="0.7"/>
+    <param name="iou_threshold" value="0.5"/>
     
    
-    <param name="image_topic" value="/camera/image_raw"/>
+    <param name="image_topic" value="/camera/color/image_raw"/>
     
     
-    <param name="queue_size" value="3"/>
-    <param name="num_threads" value="4"/>
+    <param name="queue_size" value="2"/>
+    <param name="num_threads" value="2"/>
   </node> 
   <!--<node pkg="yolopkg" type="realsense_publisher.py" name="realsense_publisher" output="screen"/>--> 
   <!--<node pkg="yolopkg" type="sub_bbox_node" name="sub_bbox_node" output="screen"/>-->

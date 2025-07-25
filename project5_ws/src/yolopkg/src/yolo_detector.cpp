@@ -331,12 +331,13 @@ private:
             cv::Mat debug_image;
 
             {
-                std::lock_guard<std::mutex> lock(output_mutex_);
+                //std::lock_guard<std::mutex> lock(output_mutex_);
                 if(output_queue_.empty()) {
                     rate.sleep();
                     std::cout<<"output_queue_.empty()"<<std::endl;
                     continue;
                 }
+                std::lock_guard<std::mutex> lock(output_mutex_);
                 auto item = output_queue_.front();
                 header = std::get<0>(item);
                 debug_image = std::get<1>(item).clone();
@@ -377,7 +378,7 @@ private:
                 cv::rectangle(debug_image, 
                     cv::Point(best.x1, best.y1),
                     cv::Point(best.x2, best.y2),
-                    cv::Scalar(0,255,0), 1);
+                    cv::Scalar(0,255,0), 2);
                     std::ostringstream conf_stream;
                 conf_stream << std::fixed << std::setprecision(2) << best.conf;
                 std::string conf_text = "conf: " + conf_stream.str();

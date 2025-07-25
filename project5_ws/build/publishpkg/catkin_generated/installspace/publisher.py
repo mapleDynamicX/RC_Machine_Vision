@@ -160,7 +160,7 @@ class RealsensePublisher:
                 self.info_pub.publish(cam_info)
 
                 # 控制循环频率
-                rospy.sleep(0.03)  # ~30Hz
+                rospy.sleep(0.035)  # ~30Hz
 
 
         finally:

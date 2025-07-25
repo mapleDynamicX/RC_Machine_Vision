@@ -227,241 +227,802 @@ float initial_y = 0.0f;
 float initial_yaw = 0.0f;
 bool has_initial = false;
 
-void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    float x_centered = msg->pose.position.x;
-    float y_centered = msg->pose.position.y;
+// void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
+//     float x_centered = msg->pose.position.x;
+//     float y_centered = msg->pose.position.y;
 
-    tf2::Quaternion q(
-        msg->pose.orientation.x,
-        msg->pose.orientation.y,
-        msg->pose.orientation.z,
-        msg->pose.orientation.w
-    );
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw_rad;
-    m.getRPY(roll, pitch, yaw_rad);
-    float yaw_deg = static_cast<float>(yaw_rad * 180.0 / M_PI);
+//     tf2::Quaternion q(
+//         msg->pose.orientation.x,
+//         msg->pose.orientation.y,
+//         msg->pose.orientation.z,
+//         msg->pose.orientation.w
+//     );
+//     tf2::Matrix3x3 m(q);
+//     double roll, pitch, yaw_rad;
+//     m.getRPY(roll, pitch, yaw_rad);
+//     float yaw_deg = static_cast<float>(yaw_rad * 180.0 / M_PI);
 
-    if (has_initial) {
-        x_centered += initial_x;
-        y_centered += initial_y;
-        yaw_deg += initial_yaw;
-    }
+//     if (has_initial) {
+//         x_centered += initial_x;
+//         y_centered += initial_y;
+//         yaw_deg += initial_yaw;
+//     }
 
-    float send_data[5] = {x_centered, y_centered, yaw_deg , 1 , 1};
-    serialComm->serial_send(2, send_data, 5);
-}
+//     float send_data[5] = {x_centered, y_centered, yaw_deg , 1 , 1};
+//     serialComm->serial_send(2, send_data, 5);
+// }
 
-void bboxCallback(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
+// void bboxCallback(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
+// {
+//     float image_center_x = image_width / 2.0f;
+//     float image_center_y = image_height / 2.0f;
+
+//     for (const auto& bbox : msg->boxes) {
+//         float x_centered = bbox.center.x - image_center_x;
+//         float y_centered = image_center_y - bbox.center.y;
+
+//         float send[2] = {
+//             x_centered,     
+//             y_centered,     
+//         };
+//         serialComm->serial_send(1, send, 2);
+//     }
+// }
+
+// ros::Publisher Odom_pub;
+// ros::Subscriber tf_sub;
+// ros::Publisher _transform_pub;
+// //ros::Publisher tf_pub;
+// /*
+// float initial_x = 0.0f;
+// float initial_y = 0.0f;
+// float initial_yaw = 0.0f;
+// bool has_initial = false;
+// */
+// // 收到消息时的回调函数
+// void transformCallback(const geometry_msgs::TransformStamped::ConstPtr& msg) {
+//     // 1. 打印基本信息
+//     // ROS_INFO("Received transform from '%s' to '%s'", 
+//     //          msg->header.frame_id.c_str(), 
+//     //          msg->child_frame_id.c_str());
+    
+//     // 2. 获取时间戳
+//     // ros::Time stamp = msg->header.stamp;
+//     // ROS_INFO("Timestamp: %f sec", stamp.toSec());
+    
+//     // 3. 提取平移量 (x, y, z)
+//     double x = msg->transform.translation.x;
+//     double y = msg->transform.translation.y;
+//     double z = msg->transform.translation.z;
+//     //ROS_INFO("Translation: [%.2f, %.2f, %.2f]", x, y, z);
+
+
+
+//     // 4. 提取旋转四元数 (x, y, z, w)
+//     double qx = msg->transform.rotation.x;
+//     double qy = msg->transform.rotation.y;
+//     double qz = msg->transform.rotation.z;
+//     double qw = msg->transform.rotation.w;
+//     // ROS_INFO("Rotation Quaternion: [%.2f, %.2f, %.2f, %.2f]", qx, qy, qz, qw);
+//     tf2::Quaternion quat_tf(qx, qy, qz, qw);
+//     tf2::Matrix3x3 m(quat_tf);
+//     double roll, pitch, yaw;
+//     m.getRPY(roll, pitch, yaw);
+//     // 弧度转角度
+//     roll *= 180.0 / M_PI;
+//     pitch *= 180.0 / M_PI;
+//     yaw *= 180.0 / M_PI;
+//     double _yaw = 0;
+//     if(yaw  + 180 >= 60)
+//     {
+//         _yaw = yaw - 60 + 360;
+//     }
+//     else
+//     {
+//         _yaw = yaw - 60;
+//     }
+//     double radians = _yaw * (M_PI / 180.0); 
+//     double _x = qx + 0.222*cos(radians);
+//     double _y = qy +  0.222*sin(radians);
+//     float msgs[3] = {0};
+//     msgs[0] = _x;
+//     msgs[1] = _y;
+//     msgs[2] = _yaw;
+//     std::cout<<"------------------------------------------"<<std::endl;
+//     std::cout<<"_x: "<< _x << "_y: " << _y << "_yaw: "<< _yaw << std::endl;
+//     std::cout<<"------------------------------------------"<<std::endl;
+//     serialComm->serial_send(0, msgs, 3);
+// }
+
+// void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
+        
+//     //nav_msgs::Odometry odom_msg;
+//     double _yaw = 0;
+//     if(initial_yaw + 60 >= 180)
+//     {
+//         _yaw = initial_yaw + 60 - 360;
+//     }
+//     else
+//     {
+//         _yaw = initial_yaw + 60;
+//     }
+//     double radians = initial_yaw * (M_PI / 180.0); 
+//     double _x = initial_x - 0.222*cos(radians);
+//     double _y = initial_y -  0.222*sin(radians);
+    
+//     // // 1. 设置消息头
+//     // odom_msg.header.stamp = msg->header.stamp;
+//     // odom_msg.header.frame_id = "odom";         // 世界坐标系
+//     // odom_msg.child_frame_id = msg->header.frame_id;
+
+//     // // 2. 设置位姿信息 (position + orientation)
+//     // odom_msg.pose.pose.position.x = _x;      // X坐标（米）
+//     // odom_msg.pose.pose.position.y = _y;      // Y坐标（米）
+//     // odom_msg.pose.pose.position.z = 1.4;       // Z坐标（米）
+    
+//     // 使用四元数表示方向
+//     double roll = 0.0;   
+//     double pitch = 0.0;       
+//     double yaw = (_yaw / 180) * M_PI;    
+//     tf2::Quaternion q;
+//     q.setRPY(roll, pitch, yaw); 
+//     // odom_msg.pose.pose.orientation.x = q.x();
+//     // odom_msg.pose.pose.orientation.y = q.y();
+//     // odom_msg.pose.pose.orientation.z = q.z();
+//     // odom_msg.pose.pose.orientation.w = q.w();
+    
+    
+//     // 3. 设置协方差矩阵 (6x6, 行主序)
+//     // double position_variance = 0.02;           // 位置方差
+//     // double orientation_variance = 0.01;        // 方向方差
+//     // boost::array<double, 36> cov = {{
+//     //     position_variance, 0, 0, 0, 0, 0,
+//     //     0, position_variance, 0, 0, 0, 0,
+//     //     0, 0, position_variance, 0, 0, 0,
+//     //     0, 0, 0, orientation_variance, 0, 0,
+//     //     0, 0, 0, 0, orientation_variance, 0,
+//     //     0, 0, 0, 0, 0, orientation_variance
+//     // }};
+//     // odom_msg.pose.covariance = cov;
+
+//     static tf2_ros::TransformBroadcaster tf_broadcaster;
+    
+//     geometry_msgs::TransformStamped transform;
+//     transform.header.stamp = msg->header.stamp;  
+//     transform.header.frame_id = "world";         // 父坐标系
+//     transform.child_frame_id = msg->header.frame_id;     // 子坐标系
+//     transform.transform.translation.x = _x;
+//     transform.transform.translation.y = _y;
+//     transform.transform.translation.z = 1.4;
+//     transform.transform.rotation.x = q.x();
+//     transform.transform.rotation.y = q.y();
+//     transform.transform.rotation.z = q.z();
+//     transform.transform.rotation.w = q.w();
+    
+    
+//     // 5. 发布消息
+//     //Odom_pub.publish(odom_msg);
+//     //tf_pub.publish(transform);
+//     tf_broadcaster.sendTransform(transform);
+    
+
+//     //test
+//     // initial_x += 0.001;
+//     // initial_y += 0.001;
+//     // float msgs[3] = {0};
+//     // msgs[0] = 11.1;
+//     // msgs[1] = 11.1;
+//     // msgs[2] = 11.30141;
+//     // serialComm->serial_send(0, msgs, 3);
+
+//     _transform_pub.publish(transform);
+//     std::cout<<"ok"<<std::endl;
+// }
+
+// struct TransformData {
+//     double x = 0.0;
+//     double y = 0.0;
+//     double z = 0.0;
+//     double roll = 0.0;
+//     double pitch = 0.0;
+//     double yaw = 0.0;
+//     ros::Time stamp;
+// } current_transform;
+
+// void tfCallback(const tf2_msgs::TFMessage::ConstPtr& msg)
+// {
+
+//     for (const auto& transform : msg->transforms) {
+//         // 获取源坐标系和目标坐标系
+//         std::string source_frame = transform.header.frame_id;
+//         std::string target_frame = transform.child_frame_id;
+        
+//         // 获取平移数据
+//         float x = transform.transform.translation.x;
+//         float y = transform.transform.translation.y;
+//         float z = transform.transform.translation.z;
+        
+//         // 获取旋转数据（四元数）
+//         float qx = transform.transform.rotation.x;
+//         float qy = transform.transform.rotation.y;
+//         float qz = transform.transform.rotation.z;
+//         float qw = transform.transform.rotation.w;
+        
+//         //转化欧拉角
+//         tf2::Quaternion tf_quat(qx, qy, qz, qw);
+//         tf2::Matrix3x3 matrix(tf_quat);
+//         double roll = 0.0;
+//         double pitch = 0.0;
+//         double yaw = 0.0;
+//         matrix.getRPY(roll, pitch, yaw);
+        
+//         // 打印示例
+//         ROS_INFO_STREAM("Processed transform: " << source_frame << " -> " << target_frame);
+//         ROS_INFO("Position: (%.3f, %.3f, %.3f)", x, y, z);
+//     }
+
+// }
+// int main(int argc, char **argv)
+// {
+//     ros::init(argc, argv, "serial_node");
+//     ros::NodeHandle nh;
+    
+//     nh.param<int>("image_width", image_width, 640);
+//     nh.param<int>("image_height", image_height, 480);
+
+//     std::string port;
+//     nh.param<std::string>("serial_port", port, "/dev/ttyUSB0");
+//     try {
+//         serialComm = new serial_mcu(port);
+//         ROS_INFO("Serial port initialized successfully");
+//     } catch (const std::exception& e) {
+//         ROS_ERROR("Failed to initialize serial port: %s", e.what());
+//         return -1;
+//     }
+
+//     //ros::Subscriber pose_sub = nh.subscribe("/pose_stamped", 20, poseCallback);
+//     //ros::Subscriber bbox_sub = nh.subscribe("/yolo/detections", 20, bboxCallback);
+//     //ros::Subscriber sub = nh.subscribe<tf2_msgs::TFMessage>("/tf", 100, tfCallback);    
+//     ros::Subscriber sub = nh.subscribe("camera/camera_info", 1, cameraInfoCallback);
+//     //Odom_pub = nh.advertise<nav_msgs::Odometry>("/camera/odom", 10);
+//     ros::Publisher restart_pub = nh.advertise<std_msgs::Bool>("/restart_slam", 1);
+//     ros::Publisher status_pub = nh.advertise<std_msgs::Bool>("/send_status", 10);
+//     _transform_pub = nh.advertise<geometry_msgs::TransformStamped>("camera/tf", 10);
+//     tf_sub = nh.subscribe("camera/relocation", 1, transformCallback);
+//     //tf_pub = nh.advertise<tf2_msgs::TFMessage>("/camera/tf", 10);
+//     ros::AsyncSpinner spinner(2);
+//     spinner.start();
+//     // ros::Rate loop_rate(10);
+//     while (ros::ok()) {
+//         //ros::spinOnce();
+
+//         std_msgs::Bool status_msg;
+//         status_msg.data = serialComm->isOpen();
+//         status_pub.publish(status_msg);
+
+//         uint8_t frame_id;
+//         float received_data[32];
+//         uint8_t data_length;
+        
+//         if (serialComm->serial_read(&frame_id, received_data, &data_length)) {
+//             //if (frame_id == 1 && data_length >= 3) {
+//                 initial_x = received_data[0];
+//                 initial_y = received_data[1];
+//                 initial_yaw = received_data[2];
+//                 has_initial = true;                         
+                
+//                 std_msgs::Bool restart_msg;
+//                 restart_msg.data = true;
+//                 restart_pub.publish(restart_msg);
+                
+//                 ROS_INFO("Initial values set: X=%.4f, Y=%.4f, Yaw=%.4f", 
+//                         initial_x, initial_y, initial_yaw);
+//             //}
+//         }
+
+//     //loop_rate.sleep();
+//        //ros::spinOnce();
+//     }
+
+//     //elete serialComm;
+//     //ros::spin();
+//     ros::waitForShutdown();
+//     return 0;
+// }
+
+
+
+double func(double x)
 {
-    float image_center_x = image_width / 2.0f;
-    float image_center_y = image_height / 2.0f;
-
-    for (const auto& bbox : msg->boxes) {
-        float x_centered = bbox.center.x - image_center_x;
-        float y_centered = image_center_y - bbox.center.y;
-
-        float send[2] = {
-            x_centered,     
-            y_centered,     
-        };
-        serialComm->serial_send(1, send, 2);
-    }
+    //return 0.00000000002581*x*x*x*x*x - 0.0000000336*x*x*x*x + 0.00000173996*x*x*x - 0.0044338*x*x + 0.5634*x - 27.3707 - 0.065;
+    return (0.0634)*std::pow(M_E, x * 9.9520)+0.7001;
 }
 
-ros::Publisher Odom_pub;
-ros::Subscriber tf_sub;
-ros::Publisher _transform_pub;
-//ros::Publisher tf_pub;
-/*
-float initial_x = 0.0f;
-float initial_y = 0.0f;
-float initial_yaw = 0.0f;
-bool has_initial = false;
-*/
-// 收到消息时的回调函数
-void transformCallback(const geometry_msgs::TransformStamped::ConstPtr& msg) {
-    // 1. 打印基本信息
-    // ROS_INFO("Received transform from '%s' to '%s'", 
-    //          msg->header.frame_id.c_str(), 
-    //          msg->child_frame_id.c_str());
-    
-    // 2. 获取时间戳
-    // ros::Time stamp = msg->header.stamp;
-    // ROS_INFO("Timestamp: %f sec", stamp.toSec());
-    
-    // 3. 提取平移量 (x, y, z)
-    double x = msg->transform.translation.x;
-    double y = msg->transform.translation.y;
-    double z = msg->transform.translation.z;
-    //ROS_INFO("Translation: [%.2f, %.2f, %.2f]", x, y, z);
-
-
-
-    // 4. 提取旋转四元数 (x, y, z, w)
-    double qx = msg->transform.rotation.x;
-    double qy = msg->transform.rotation.y;
-    double qz = msg->transform.rotation.z;
-    double qw = msg->transform.rotation.w;
-    // ROS_INFO("Rotation Quaternion: [%.2f, %.2f, %.2f, %.2f]", qx, qy, qz, qw);
-    tf2::Quaternion quat_tf(qx, qy, qz, qw);
-    tf2::Matrix3x3 m(quat_tf);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    // 弧度转角度
-    roll *= 180.0 / M_PI;
-    pitch *= 180.0 / M_PI;
-    yaw *= 180.0 / M_PI;
-    double _yaw = 0;
-    if(yaw  + 180 >= 60)
-    {
-        _yaw = yaw - 60 + 360;
-    }
-    else
-    {
-        _yaw = yaw - 60;
-    }
-    double radians = _yaw * (M_PI / 180.0); 
-    double _x = qx + 0.222*cos(radians);
-    double _y = qy +  0.222*sin(radians);
-    float msgs[3] = {0};
-    msgs[0] = _x;
-    msgs[1] = _y;
-    msgs[2] = _yaw;
-    std::cout<<"------------------------------------------"<<std::endl;
-    std::cout<<"_x: "<< _x << "_y: " << _y << "_yaw: "<< _yaw << std::endl;
-    std::cout<<"------------------------------------------"<<std::endl;
-    serialComm->serial_send(0, msgs, 3);
-}
-
-void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& msg) {
-        
-    //nav_msgs::Odometry odom_msg;
-    double _yaw = 0;
-    if(initial_yaw + 60 >= 180)
-    {
-        _yaw = initial_yaw + 60 - 360;
-    }
-    else
-    {
-        _yaw = initial_yaw + 60;
-    }
-    double radians = initial_yaw * (M_PI / 180.0); 
-    double _x = initial_x - 0.222*cos(radians);
-    double _y = initial_y -  0.222*sin(radians);
-    
-    // // 1. 设置消息头
-    // odom_msg.header.stamp = msg->header.stamp;
-    // odom_msg.header.frame_id = "odom";         // 世界坐标系
-    // odom_msg.child_frame_id = msg->header.frame_id;
-
-    // // 2. 设置位姿信息 (position + orientation)
-    // odom_msg.pose.pose.position.x = _x;      // X坐标（米）
-    // odom_msg.pose.pose.position.y = _y;      // Y坐标（米）
-    // odom_msg.pose.pose.position.z = 1.4;       // Z坐标（米）
-    
-    // 使用四元数表示方向
-    double roll = 0.0;   
-    double pitch = 0.0;       
-    double yaw = (_yaw / 180) * M_PI;    
-    tf2::Quaternion q;
-    q.setRPY(roll, pitch, yaw); 
-    // odom_msg.pose.pose.orientation.x = q.x();
-    // odom_msg.pose.pose.orientation.y = q.y();
-    // odom_msg.pose.pose.orientation.z = q.z();
-    // odom_msg.pose.pose.orientation.w = q.w();
-    
-    
-    // 3. 设置协方差矩阵 (6x6, 行主序)
-    // double position_variance = 0.02;           // 位置方差
-    // double orientation_variance = 0.01;        // 方向方差
-    // boost::array<double, 36> cov = {{
-    //     position_variance, 0, 0, 0, 0, 0,
-    //     0, position_variance, 0, 0, 0, 0,
-    //     0, 0, position_variance, 0, 0, 0,
-    //     0, 0, 0, orientation_variance, 0, 0,
-    //     0, 0, 0, 0, orientation_variance, 0,
-    //     0, 0, 0, 0, 0, orientation_variance
-    // }};
-    // odom_msg.pose.covariance = cov;
-
-    static tf2_ros::TransformBroadcaster tf_broadcaster;
-    
-    geometry_msgs::TransformStamped transform;
-    transform.header.stamp = msg->header.stamp;  
-    transform.header.frame_id = "world";         // 父坐标系
-    transform.child_frame_id = msg->header.frame_id;     // 子坐标系
-    transform.transform.translation.x = _x;
-    transform.transform.translation.y = _y;
-    transform.transform.translation.z = 1.4;
-    transform.transform.rotation.x = q.x();
-    transform.transform.rotation.y = q.y();
-    transform.transform.rotation.z = q.z();
-    transform.transform.rotation.w = q.w();
-    
-    
-    // 5. 发布消息
-    //Odom_pub.publish(odom_msg);
-    //tf_pub.publish(transform);
-    tf_broadcaster.sendTransform(transform);
-    
-
-    //test
-    // initial_x += 0.001;
-    // initial_y += 0.001;
-    // float msgs[3] = {0};
-    // msgs[0] = 11.1;
-    // msgs[1] = 11.1;
-    // msgs[2] = 11.30141;
-    // serialComm->serial_send(0, msgs, 3);
-
-    _transform_pub.publish(transform);
-    std::cout<<"ok"<<std::endl;
-}
-
-struct TransformData {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    double roll = 0.0;
-    double pitch = 0.0;
-    double yaw = 0.0;
-    ros::Time stamp;
-} current_transform;
-
-void tfCallback(const tf2_msgs::TFMessage::ConstPtr& msg)
+double func1(double x)
 {
+    //f(x) = -0.0000x³ + 0.0001x² + 0.0041x + 1.2000
+    return -12443.9549*x*x*x + 8829.4844*x*x + 4103.5704*x + 12000.0000 - 760.00;
+}
+double func2(double x)
+{
+    //f(x) = -0.0000x³ + 0.0000x² + 0.0061x + 1.3000
+    return -12443.9549*x*x*x + 1816.3203*x*x + 6103.4912*x + 13000.0000 - 760.00;
+}
+double func3(double x)
+{
+    //f(x) = 0.0000x³ + -0.0000x² + 0.0057x + 1.4000
+    return 19921.5535*x*x*x + (-4339.3309)*x*x + 5687.4720*x + 14000.0000 - 760.00;
+}
+double func4(double x)
+{
+    //f(x) = -0.0000x³ + 0.0001x² + 0.0061x + 1.5000
+    return -4442.8628*x*x*x + 6424.8821*x*x + 6063.1006*x + 15000.0000 - 760.00;
+}
+double func5(double x)
+{
+    //f(x) = 0.0000x³ + 0.0000x² + 0.0076x + 1.6000
+    return 130826.3682*x*x*x + 4493.4363*x*x + 7645.2741*x + 16000.0000 - 760.00;
+}
+double func6(double x)
+{
+    //f(x) = -0.0000x³ + 0.0005x² + 0.0129x + 1.7000
+    return -418512.2396*x*x*x + 45589.9234*x*x + 12889.5027*x + 17000.0000 - 760.00;
+}
+double func7(double x)
+{
+    //f(x) = 0.0000x³ + -0.0004x² + 0.0130x + 1.8000
+    return 114330.0759*x*x*x - 44017.7322*x*x + 13001.7100*x + 18000.0000 - 760.00;
+}
+double func8(double x)
+{
+    //f(x) = 0.0000x³ + -0.0001x² + 0.0076x + 1.9000
+    return 154948.8835*x*x*x + (-8559.4025)*x*x + 7566.2858*x + 19000.0000 - 760.00;
+}
+double func9(double x)
+{
+    //f(x) = -0.0000x³ + 0.0005x² + 0.0118x + 2.0000
+    return -443449.9994*x*x*x + 45190.8157*x*x + 11801.9761*x + 20000.0000 - 760.00;
+}
+double func10(double x)
+{
+    //f(x) = 0.0000x³ + -0.0006x² + 0.0106x + 2.1000
+    return 395602.4428*x*x*x + (-60438.9742)*x*x + 10591.2723*x + 21000.0000 - 760.00;
+}
+double func11(double x)
+{
+    //f(x) = -0.0000x³ + 0.0007x² + 0.0121x + 2.2000
+    return -390440.0922*x*x*x + 74073.7684*x*x + 12136.6399*x + 22000.0000 - 760.00;
+}
+double func12(double x)
+{
+    //f(x) = 0.0000x³ + -0.0000x² + 0.0168x + 2.3000
+    return 72830.2770*x*x*x + (-2436.8720)*x*x + 16815.9620*x + 23000.0000 - 760.00;
+}
+double func13(double x)
+{
+    //f(x) = -0.0000x³ + 0.0001x² + 0.0173x + 2.4000
+    return -3663.2413*x*x*x + 10471.5663*x*x + 17290.6517*x + 24000.0000 - 760.00;
+}
+double func14(double x)
+{
+    //f(x) = 0.0001x³ + 0.0001x² + 0.0237x + 3.2000
+    return 636720.5745*x*x*x + 6240.5225*x*x + 23724.8059*x + 32000.0000 - 760.00;
+}
+double func15(double x)
+{
+    //0.0001x³ + 0.0008x² + 0.0273x + 3.3000
+    return 636720.5745*x*x*x + 82666.0931*x*x + 27281.9596*x + 33000.0000 - 760.00;
+}
 
-    for (const auto& transform : msg->transforms) {
-        // 获取源坐标系和目标坐标系
-        std::string source_frame = transform.header.frame_id;
-        std::string target_frame = transform.child_frame_id;
+
+void boundingBoxCallback(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
+{
+    // 打印消息头信息
+    ROS_INFO("Received bounding boxes in frame: %s", msg->header.frame_id.c_str());
+    double fx = 387.2624;
+    // 遍历所有检测到的边界框
+    for (const auto& box : msg->boxes) {
+        // 提取中心点坐标
+        double center_x = box.center.x;
+        double center_y = box.center.y;
         
-        // 获取平移数据
-        float x = transform.transform.translation.x;
-        float y = transform.transform.translation.y;
-        float z = transform.transform.translation.z;
+        // 提取边界框尺寸
+        double size_x = box.size_x;
+        double size_y = box.size_y;
         
-        // 获取旋转数据（四元数）
-        float qx = transform.transform.rotation.x;
-        float qy = transform.transform.rotation.y;
-        float qz = transform.transform.rotation.z;
-        float qw = transform.transform.rotation.w;
+
+        // 打印边界框信息
+        ROS_INFO("Box: Center(%.2f, %.2f), Size(%.2fx%.2f)", 
+                center_x, center_y, size_x, size_y);
         
-        //转化欧拉角
-        tf2::Quaternion tf_quat(qx, qy, qz, qw);
-        tf2::Matrix3x3 matrix(tf_quat);
-        double roll = 0.0;
-        double pitch = 0.0;
-        double yaw = 0.0;
-        matrix.getRPY(roll, pitch, yaw);
+        //double depth = func(box.center.y - box.size_y / 2);
         
-        // 打印示例
-        ROS_INFO_STREAM("Processed transform: " << source_frame << " -> " << target_frame);
-        ROS_INFO("Position: (%.3f, %.3f, %.3f)", x, y, z);
+        double _x = box.center.y - box.size_y / 2;
+        std::cout << "_x: " << _x << std::endl;
+        //double depth = func(_x / 100.0) / 10000.0;
+        double depth = func(_x / 1000.0);
+        double offset = (center_x - 320) * depth / fx;
+        double yaw = atan(offset / depth) * 180 / M_PI;
+        std::cout << "depth :  " << depth << std::endl;
+        std::cout << "yaw :  " <<  yaw << std::endl;
+        if(depth <= 0)
+        {
+            return;
+        }
+        
+        
+        float msgs[3] = {0};
+        msgs[0] = 0;
+        msgs[1] = depth;
+        msgs[2] = yaw;
+        serialComm->serial_send(0, msgs, 3);
     }
+               
 
 }
+
+void boundingBoxCallback2(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
+{
+    // 打印消息头信息
+    ROS_INFO("Received bounding boxes in frame: %s", msg->header.frame_id.c_str());
+    double fx = 387.2624;
+    // 遍历所有检测到的边界框
+    for (const auto& box : msg->boxes) {
+        // 提取中心点坐标
+        double center_x = box.center.x;
+        double center_y = box.center.y;
+        
+        // 提取边界框尺寸
+        double size_x = box.size_x;
+        double size_y = box.size_y;
+        
+
+        // 打印边界框信息
+        ROS_INFO("Box: Center(%.2f, %.2f), Size(%.2fx%.2f)", 
+                center_x, center_y, size_x, size_y);
+        
+        //double depth = func(box.center.y - box.size_y / 2);
+        
+        double _x = box.center.y - box.size_y / 2;
+        std::cout << "_x: " << _x << std::endl;
+        //double depth = func(_x / 100.0) / 10000.0;
+        double depth = -1;
+        
+        // if(_x >= 189.87 && _x <= 208.66)
+        // {
+        //     depth = func1(_x);
+        // }
+        // else if(_x >= 208.66 && _x <= 225.15)
+        // {
+        //     depth = func2(_x);
+        // }
+        // else if(_x >= 225.15 && _x <= 243.16)
+        // {
+        //     depth = func3(_x);
+        // }
+        // else if(_x >= 243.16 && _x <= 257.65)
+        // {
+        //     depth = func4(_x);
+        // }
+        // else if(_x >= 257.65 && _x <= 268.12)
+        // {
+        //     depth = func5(_x);
+        // }
+        // else if(_x >= 268.12 && _x <= 275.26)
+        // {
+        //     depth = func6(_x);
+        // }
+        // else if(_x >= 275.26 && _x <= 285.60)
+        // {
+        //     depth = func7(_x);
+        // }
+        // else if(_x >= 285.60 && _x <= 297.16)
+        // {
+        //     depth = func8(_x);
+        // }
+        // else if(_x >= 297.16 && _x <= 305.10)
+        // {
+        //     depth = func9(_x);
+        // }
+        // else if(_x >= 305.10 && _x <= 316.43)
+        // {
+        //     depth = func10(_x);
+        // }
+        // else if(_x >= 316.43 && _x <= 322.96)
+        // {
+        //     depth = func11(_x);
+        // }
+        // else if(_x >= 322.96 && _x <= 328.87)
+        // {
+        //     depth = func12(_x);
+        // }
+        // else if(_x >= 328.87 && _x <= 367.37)
+        // {
+        //     depth = func13(_x);
+        // }
+        // else if(_x >= 367.37 && _x <= 371.37)
+        // {
+        //     depth = func14(_x);
+        // }
+        // else if(_x >= 371.37 && _x <= 374.63)
+        // {
+        //     depth = func15(_x);
+        // }
+        // else
+        // {
+        //     return;
+        // }
+        if(_x >= 189.87 && _x <= 208.66)
+        {
+            depth = func1(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 208.66 && _x <= 225.15)
+        {
+            depth = func2(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 225.15 && _x <= 243.16)
+        {
+            depth = func3(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 243.16 && _x <= 257.65)
+        {
+            depth = func4(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 257.65 && _x <= 268.12)
+        {
+            depth = func5(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 268.12 && _x <= 275.26)
+        {
+            depth = func6(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 275.26 && _x <= 285.60)
+        {
+            depth = func7(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 285.60 && _x <= 297.16)
+        {
+            depth = func8(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 297.16 && _x <= 305.10)
+        {
+            depth = func9(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 305.10 && _x <= 316.43)
+        {
+            depth = func10(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 316.43 && _x <= 322.96)
+        {
+            depth = func11(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 322.96 && _x <= 328.87)
+        {
+            depth = func12(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 328.87 && _x <= 367.37)
+        {
+            depth = func13(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 367.37 && _x <= 371.37)
+        {
+            depth = func14(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 371.37 && _x <= 374.63)
+        {
+            depth = func15(_x / 100.0) / 10000.0;
+        }
+        else
+        {
+            return;
+        }
+
+
+        double offset = (center_x - 320) * depth / fx;
+        double yaw = atan(offset / depth) * 180 / M_PI;
+        std::cout << "depth :  " << depth << std::endl;
+        std::cout << "yaw :  " <<  yaw << std::endl;
+        if(depth <= 0)
+        {
+            return;
+        }
+        
+        
+        float msgs[3] = {0};
+        msgs[0] = 0;
+        msgs[1] = depth;
+        msgs[2] = yaw;
+        serialComm->serial_send(0, msgs, 3);
+    }
+               
+
+}
+
+
+
+
+
+
+void boundingBoxCallback3(const vision_msgs::BoundingBox2DArray::ConstPtr& msg)
+{
+    // 打印消息头信息
+    ROS_INFO("Received bounding boxes in frame: %s", msg->header.frame_id.c_str());
+    double fx = 387.2624;
+    // 遍历所有检测到的边界框
+    for (const auto& box : msg->boxes) {
+        // 提取中心点坐标
+        double center_x = box.center.x;
+        double center_y = box.center.y;
+        
+        // 提取边界框尺寸
+        double size_x = box.size_x;
+        double size_y = box.size_y;
+        
+
+        // 打印边界框信息
+        ROS_INFO("Box: Center(%.2f, %.2f), Size(%.2fx%.2f)", 
+                center_x, center_y, size_x, size_y);
+        
+        //double depth = func(box.center.y - box.size_y / 2);
+        
+        double _x = box.center.y - box.size_y / 2;
+        std::cout << "_x: " << _x << std::endl;
+        //double depth = func(_x / 100.0) / 10000.0;
+        double depth = -1;
+        
+        // if(_x >= 189.87 && _x <= 208.66)
+        // {
+        //     depth = func1(_x);
+        // }
+        // else if(_x >= 208.66 && _x <= 225.15)
+        // {
+        //     depth = func2(_x);
+        // }
+        // else if(_x >= 225.15 && _x <= 243.16)
+        // {
+        //     depth = func3(_x);
+        // }
+        // else if(_x >= 243.16 && _x <= 257.65)
+        // {
+        //     depth = func4(_x);
+        // }
+        // else if(_x >= 257.65 && _x <= 268.12)
+        // {
+        //     depth = func5(_x);
+        // }
+        // else if(_x >= 268.12 && _x <= 275.26)
+        // {
+        //     depth = func6(_x);
+        // }
+        // else if(_x >= 275.26 && _x <= 285.60)
+        // {
+        //     depth = func7(_x);
+        // }
+        // else if(_x >= 285.60 && _x <= 297.16)
+        // {
+        //     depth = func8(_x);
+        // }
+        // else if(_x >= 297.16 && _x <= 305.10)
+        // {
+        //     depth = func9(_x);
+        // }
+        // else if(_x >= 305.10 && _x <= 316.43)
+        // {
+        //     depth = func10(_x);
+        // }
+        // else if(_x >= 316.43 && _x <= 322.96)
+        // {
+        //     depth = func11(_x);
+        // }
+        // else if(_x >= 322.96 && _x <= 328.87)
+        // {
+        //     depth = func12(_x);
+        // }
+        // else if(_x >= 328.87 && _x <= 367.37)
+        // {
+        //     depth = func13(_x);
+        // }
+        // else if(_x >= 367.37 && _x <= 371.37)
+        // {
+        //     depth = func14(_x);
+        // }
+        // else if(_x >= 371.37 && _x <= 374.63)
+        // {
+        //     depth = func15(_x);
+        // }
+        // else
+        // {
+        //     return;
+        // }
+        if(_x >= 189.87 && _x <= 208.66)
+        {
+            depth = func1(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 208.66 && _x <= 225.15)
+        {
+            depth = func2(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 225.15 && _x <= 243.16)
+        {
+            depth = func3(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 243.16 && _x <= 257.65)
+        {
+            depth = func4(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 257.65 && _x <= 268.12)
+        {
+            depth = func5(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 268.12 && _x <= 275.26)
+        {
+            depth = func6(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 275.26 && _x <= 285.60)
+        {
+            depth = func7(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 285.60 && _x <= 297.16)
+        {
+            depth = func8(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 297.16 && _x <= 305.10)
+        {
+            depth = func9(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 305.10 && _x <= 316.43)
+        {
+            depth = func10(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 316.43 && _x <= 322.96)
+        {
+            depth = func11(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 322.96 && _x <= 328.87)
+        {
+            depth = func12(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 328.87 && _x <= 367.37)
+        {
+            depth = func13(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 367.37 && _x <= 371.37)
+        {
+            depth = func14(_x / 100.0) / 10000.0;
+        }
+        else if(_x >= 371.37 && _x <= 374.63)
+        {
+            depth = func15(_x / 100.0) / 10000.0;
+        }
+        else
+        {
+            return;
+        }
+
+
+        double offset = (center_x - 320) * depth / fx;
+        double yaw = atan(offset / depth) * 180 / M_PI;
+        std::cout << "depth :  " << depth << std::endl;
+        std::cout << "yaw :  " <<  yaw << std::endl;
+        if(depth <= 0)
+        {
+            return;
+        }
+        
+        
+        float msgs[3] = {0};
+        msgs[0] = 0;
+        msgs[1] = depth;
+        msgs[2] = yaw;
+        serialComm->serial_send(0, msgs, 3);
+    }
+               
+
+}
+
+
+
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "serial_node");
@@ -483,49 +1044,64 @@ int main(int argc, char **argv)
     //ros::Subscriber pose_sub = nh.subscribe("/pose_stamped", 20, poseCallback);
     //ros::Subscriber bbox_sub = nh.subscribe("/yolo/detections", 20, bboxCallback);
     //ros::Subscriber sub = nh.subscribe<tf2_msgs::TFMessage>("/tf", 100, tfCallback);    
-    ros::Subscriber sub = nh.subscribe("camera/camera_info", 1, cameraInfoCallback);
+    //ros::Subscriber sub = nh.subscribe("camera/camera_info", 1, cameraInfoCallback);
     //Odom_pub = nh.advertise<nav_msgs::Odometry>("/camera/odom", 10);
-    ros::Publisher restart_pub = nh.advertise<std_msgs::Bool>("/restart_slam", 1);
-    ros::Publisher status_pub = nh.advertise<std_msgs::Bool>("/send_status", 10);
-    _transform_pub = nh.advertise<geometry_msgs::TransformStamped>("camera/tf", 10);
-    tf_sub = nh.subscribe("camera/relocation", 1, transformCallback);
+    //ros::Publisher restart_pub = nh.advertise<std_msgs::Bool>("/restart_slam", 1);
+    //ros::Publisher status_pub = nh.advertise<std_msgs::Bool>("/send_status", 10);
+    //_transform_pub = nh.advertise<geometry_msgs::TransformStamped>("camera/tf", 10);
+    //ros::Subscriber tf_sub = nh.subscribe("camera/relocation", 1, transformCallback);
+    ros::Subscriber bbox_sub = nh.subscribe("/yolo/detections", 1, boundingBoxCallback);
+    //image_transport::ImageTransport it(nh);
+    //image_transport::Subscriber sub = it.subscribe("/camera/color/image_raw", 10, imageCallback);
     //tf_pub = nh.advertise<tf2_msgs::TFMessage>("/camera/tf", 10);
-    ros::AsyncSpinner spinner(2);
-    spinner.start();
-    // ros::Rate loop_rate(10);
-    while (ros::ok()) {
-        //ros::spinOnce();
+    //ros::AsyncSpinner spinner(2);
+    //spinner.start();
+    // ros::Rate loop_rate(10); 
 
-        std_msgs::Bool status_msg;
-        status_msg.data = serialComm->isOpen();
-        status_pub.publish(status_msg);
+    // while (ros::ok()) {
+    //     //ros::spinOnce();
 
-        uint8_t frame_id;
-        float received_data[32];
-        uint8_t data_length;
+    //     std_msgs::Bool status_msg;
+    //     status_msg.data = serialComm->isOpen();
+    //     status_pub.publish(status_msg);
+
+    //     uint8_t frame_id;
+    //     float received_data[32];
+    //     uint8_t data_length;
         
-        if (serialComm->serial_read(&frame_id, received_data, &data_length)) {
-            //if (frame_id == 1 && data_length >= 3) {
-                initial_x = received_data[0];
-                initial_y = received_data[1];
-                initial_yaw = received_data[2];
-                has_initial = true;                         
+    //     if (serialComm->serial_read(&frame_id, received_data, &data_length)) {
+    //         //if (frame_id == 1 && data_length >= 3) {
+    //             initial_x = received_data[0];
+    //             initial_y = received_data[1];
+    //             initial_yaw = received_data[2];
+    //             has_initial = true;                         
                 
-                std_msgs::Bool restart_msg;
-                restart_msg.data = true;
-                restart_pub.publish(restart_msg);
+    //             std_msgs::Bool restart_msg;
+    //             restart_msg.data = true;
+    //             restart_pub.publish(restart_msg);
                 
-                ROS_INFO("Initial values set: X=%.4f, Y=%.4f, Yaw=%.4f", 
-                        initial_x, initial_y, initial_yaw);
-            //}
-        }
+    //             ROS_INFO("Initial values set: X=%.4f, Y=%.4f, Yaw=%.4f", 
+    //                     initial_x, initial_y, initial_yaw);
+    //         //}
+    //     }
 
-    //loop_rate.sleep();
-       //ros::spinOnce();
-    }
+    // //loop_rate.sleep();
+    // //ros::spinOnce();
+    // }
+    // ros::Rate a(30);
+    // while(true)
+    // {
+    //     float msgs[3] = {0};
+    //     msgs[0] = 0;
+    //     msgs[1] = 1;
+    //     msgs[2] = 2;
+    //     serialComm->serial_send(0, msgs, 3);
+    //     a.sleep();
+    //     std::cout<<"input"<<std::endl;
+    // }
 
     //elete serialComm;
-    //ros::spin();
-    ros::waitForShutdown();
+    ros::spin();
+    //ros::waitForShutdown();
     return 0;
 }

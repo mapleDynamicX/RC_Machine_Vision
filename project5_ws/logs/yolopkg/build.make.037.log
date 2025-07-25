@@ -1,4 +1,0 @@
-[ 50%] Built target sub_bbox_node
-[ 50%] Built target sub_img_node
-[ 75%] Built target pub_img_node
-[100%] Built target yolo_detector_node
