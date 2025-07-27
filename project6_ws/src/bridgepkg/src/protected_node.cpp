@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "protected_node");
     ros::NodeHandle nh;
-    // ros::Subscriber serial_sub = nh.subscribe("serial/status", 1, boolCallback);
+    ros::Subscriber serial_sub = nh.subscribe("serial/status", 1, boolCallback);
     // ros::Subscriber camera_sub = nh.subscribe("camera/camera_info", 1, cameraInfoCallback);
     // //ros::spin();
     // ros::AsyncSpinner spinner(3);
