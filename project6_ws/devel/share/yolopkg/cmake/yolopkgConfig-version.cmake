@@ -1,0 +1,1 @@
+/home/robocon/RC/project6_ws/devel/.private/yolopkg/share/yolopkg/cmake/yolopkgConfig-version.cmake
