@@ -118,3 +118,100 @@ pcl::transformPointCloud(*cloud, *transformed_cloud, transform2);
 ```
 
 这是对点云作变化而非坐标系, transform2是cloud坐标系到transformed坐标系的变化矩阵
+
+## 删除点云前n个点
+
+在 PCL 中删除点云的前 n 个点可以通过直接操作点云数据来实现，因为 PCL 的点云类本质上是一个继承自 `std::vector`的容器
+
+```cpp
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
+// 确保这是你的点类型定义
+// using PointCloudTT = pcl::PointCloud<pcl::PointXYZ>;
+
+void removeFirstNPoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int n) {
+    if (!cloud || n <= 0) return;  // 检查无效输入
+
+    // 确保n不超过点云大小
+    if (n > cloud->size()) n = cloud->size();
+
+    // 方法1：使用erase - 最高效 (O(M) 复杂度，M=剩余点数量)
+    cloud->points.erase(cloud->points.begin(), cloud->points.begin() + n);
+
+    // 方法2：创建新点云拷贝剩余点 (内存占用更高)
+    // pcl::PointCloud<pcl::PointXYZ>::Ptr temp(new pcl::PointCloud<pcl::PointXYZ>);
+    // temp->points.assign(cloud->points.begin() + n, cloud->points.end());
+    // cloud = temp;
+
+    // 更新点云元数据
+    cloud->width = cloud->size();  // 更新宽度
+    cloud->height = 1;             // 设置成无序点云
+}
+```
+
+## 滤波
+
+在 PCL (Point Cloud Library) 中使用 C++ 过滤离群点（Outliers）和噪点（Noise）主要有两种常用方法：​**​统计滤波​**​和​**​半径滤波**
+
+### 方法 1：统计滤波 (Statistical Outlier Removal)
+
+通过分析点云局部邻域的分布特征，移除不符合统计规律的离群点。
+
+#### 步骤：
+
+1. ​**​计算平均距离​**​：对每个点，计算其到 `k`个最近邻点的平均距离。
+
+2. ​**​统计分析​**​：假设所有点平均距离服从高斯分布，计算全局均值 μ和标准差 σ。
+
+3. ​**​阈值过滤​**​：移除距离大于 μ+α⋅σ的点。
+
+```cpp
+#include <pcl/filters/statistical_outlier_removal.h>
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr filterStatistical(
+    const pcl::PointCloud<pcl::PointXYZ>::Ptr& input_cloud, 
+    int mean_k, 
+    float stddev_mult
+) {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+    sor.setInputCloud(input_cloud);
+    sor.setMeanK(mean_k);             // 邻域点数 (建议值: 50)
+    sor.setStddevMulThresh(stddev_mult); // 阈值倍数 (建议值: 1.0-3.0)
+    sor.filter(*filtered_cloud);
+
+    return filtered_cloud;
+}
+```
+
+### 方法 2：半径滤波 (Radius Outlier Removal)
+
+移除局部邻域密度低于阈值的孤立点。
+
+#### 步骤：
+
+1. ​**​邻域分析​**​：对每个点，统计其半径 r内的邻点数 n。
+
+2. ​**​阈值过滤​**​：移除邻点数 n<Nmin​的点。
+
+```cpp
+#include <pcl/filters/radius_outlier_removal.h>
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr filterRadius(
+    const pcl::PointCloud<pcl::PointXYZ>::Ptr& input_cloud, 
+    float radius, 
+    int min_neighbors
+) {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+    pcl::RadiusOutlierRemoval<pcl::PointXYZ> ror;
+    ror.setInputCloud(input_cloud);
+    ror.setRadiusSearch(radius);       // 搜索半径 (单位: 米)
+    ror.setMinNeighborsInRadius(min_neighbors); // 最小邻点数
+    ror.filter(*filtered_cloud);
+
+    return filtered_cloud;
+}
+```

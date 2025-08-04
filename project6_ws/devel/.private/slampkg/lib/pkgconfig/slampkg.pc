@@ -1,8 +1,0 @@
-prefix=/home/robocon/RC/project6_ws/devel/.private/slampkg
-
-Name: slampkg
-Description: Description of slampkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

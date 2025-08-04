@@ -1,8 +1,0 @@
-prefix=/home/robocon/RC/project6_ws/install
-
-Name: registrationpkg
-Description: Description of registrationpkg
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

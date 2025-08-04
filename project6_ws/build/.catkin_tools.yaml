@@ -1,6 +1,0 @@
-devel_space: /home/robocon/RC/project6_ws/devel
-install: false
-install_space: /home/robocon/RC/project6_ws/install
-profile: default
-source_space: /home/robocon/RC/project6_ws/src
-workspace: /home/robocon/RC/project6_ws
